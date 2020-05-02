@@ -1,0 +1,24 @@
+{
+  "name": "unicalcorn",
+  "version": "1.0.0",
+  "description": "ical on an unicornhat-hd",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luismreis/unicalcorn.git"
+  },
+  "keywords": [
+    "ical",
+    "unicornhat-hd",
+    "raspberrypi"
+  ],
+  "author": "luis.m.reis@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/luismreis/unicalcorn/issues"
+  },
+  "homepage": "https://github.com/luismreis/unicalcorn#readme"
+}
