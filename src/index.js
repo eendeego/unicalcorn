@@ -1,5 +1,6 @@
 import ical from 'ical';
 import fetch from 'node-fetch';
+import uiEventLoop from './ui.js';
 
 async function fetchIcalData(url) {
   console.log('ical url: ' + url);
@@ -40,4 +41,11 @@ async function fetchCurrentEvents() {
   );
 }
 
-dumpEvents(await fetchCurrentEvents());
+// eslint-disable-next-line
+function renderCalendar({url}) {
+  return [];
+}
+
+uiEventLoop(renderCalendar, {url: process.argv[2]});
+
+fetchCurrentEvents().then(events => dumpEvents(events));
