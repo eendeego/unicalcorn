@@ -7,14 +7,18 @@ import ShallowEquals from 'shallow-equal/dist/index.cjs.js';
 
 const {shallowEqualArrays} = ShallowEquals;
 
+let sceneGraph = [];
+
 function paint(sceneGraph) {
   console.log('New Scene Graph: ', sceneGraph);
 }
 
-let hookIndex = 0;
+let hookIndex = -1;
 let hookList = [];
+let topLevelUpdate;
 
 export function useEffect(callback, dependencies) {
+  hookIndex++;
   if (hookIndex === hookList.length) {
     hookList.push({
       type: 'effect',
@@ -26,29 +30,48 @@ export function useEffect(callback, dependencies) {
   } else {
     hookList[hookIndex].newDependencies = dependencies;
   }
-
-  hookIndex++;
 }
 
-let sceneGraph = [];
+export function useState(initialValue) {
+  hookIndex++;
+
+  if (hookIndex === hookList.length) {
+    console.log('new hook!');
+    const hookInfo = {
+      type: 'state',
+      value: initialValue,
+      setter: function setter(newValue) {
+        hookInfo.value = newValue;
+        topLevelUpdate();
+      },
+    };
+
+    hookList.push(hookInfo);
+  }
+
+  return [hookList[hookIndex].value, hookList[hookIndex].setter];
+}
 
 export default function uiEventLoop(topComponent, props) {
-  hookIndex = 0;
-  const newSceneGraph = topComponent(props);
+  topLevelUpdate = function () {
+    console.log('topLevelUpdate');
 
-  if (!deepEqual(sceneGraph, newSceneGraph)) {
-    sceneGraph = newSceneGraph;
-    paint(sceneGraph);
-  }
+    hookIndex = -1;
+    const newSceneGraph = topComponent(props);
 
-  for (const hook of hookList) {
-    if (hook.type === 'effect') {
-      if (!shallowEqualArrays(hook.newDependencies, hook.dependencies)) {
-        hook.cleanup = hook.callback();
+    if (!deepEqual(sceneGraph, newSceneGraph)) {
+      sceneGraph = newSceneGraph;
+      paint(sceneGraph);
+    }
+
+    for (const hook of hookList) {
+      if (hook.type === 'effect') {
+        if (!shallowEqualArrays(hook.newDependencies, hook.dependencies)) {
+          hook.cleanup = hook.callback();
+        }
       }
     }
-  }
-  // Eventually, this will go away and the update cycle will be triggered by
-  // something else
-  setTimeout(_ => uiEventLoop(topComponent, props), 167);
+  };
+
+  topLevelUpdate();
 }
