@@ -29,7 +29,8 @@
   "dependencies": {
     "deep-equal": "^2.0.3",
     "ical": "^0.8.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "shallow-equal": "^1.2.1"
   },
   "type": "module"
 }
