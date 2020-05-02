@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/luismreis/unicalcorn/issues"
   },
-  "homepage": "https://github.com/luismreis/unicalcorn#readme"
+  "homepage": "https://github.com/luismreis/unicalcorn#readme",
+  "devDependencies": {
+    "prettier": "2.0.5"
+  }
 }
