@@ -12,44 +12,61 @@ function roundUp(time) {
   return Math.ceil(time / QUARTER_HOUR) * QUARTER_HOUR;
 }
 
-export function computeLayout(events) {
+function computeLayout(events) {
   let startTime = events.reduce(
     (min, event) => Math.min(min, event.start.getTime()),
     Number.POSITIVE_INFINITY,
   );
   let endTime = events.reduce(
     (max, event) => Math.max(max, event.end.getTime()),
-    Number.POSITIVE_INFINITY,
+    Number.NEGATIVE_INFINITY,
   );
 
-  startTime = roundDown(startTime);
-  endTime = roundUp(endTime / QUARTER_HOUR);
+  const start = roundDown(startTime);
+  const end = roundUp(endTime);
 
   const timeline = Array.from(
-    {length: (endTime - startTime) / QUARTER_HOUR},
-    () => [],
+    {length: (end - start) / QUARTER_HOUR},
+    (_, i) => ({
+      time: start + i * QUARTER_HOUR,
+      columns: [],
+    }),
   );
 
   let maxColumns = 0;
   for (const event of events) {
     const firstSlotIndex =
-      (roundDown(event.start.getTime()) - startTime) / QUARTER_HOUR;
-    const lastSlotIndex =
-      (roundUp(event.end.getTime()) - startTime) / QUARTER_HOUR;
-
-    const column = timeline[firstSlotIndex].findIndex(
+      (roundDown(event.start.getTime()) - start) / QUARTER_HOUR;
+    const lastSlotIndex = (roundUp(event.end.getTime()) - start) / QUARTER_HOUR;
+    let column = timeline[firstSlotIndex].columns.findIndex(
       column => column === undefined,
     );
-    maxColumns = Math.max(maxColumns, column + 1);
+    let rowGroup;
+    if (column === -1) {
+      column = timeline[firstSlotIndex].columns.length;
+    }
+    if (column === 0) {
+      rowGroup = {
+        width: 1,
+      };
+    } else {
+      rowGroup = timeline[firstSlotIndex].columns[0].rowGroup;
+      if (column === timeline[firstSlotIndex].columns.length) {
+        rowGroup.width++;
+      }
+    }
 
+    maxColumns = Math.max(maxColumns, column + 1);
     for (
       let slotIndex = firstSlotIndex;
       slotIndex < lastSlotIndex;
       slotIndex++
     ) {
-      timeline[slotIndex][column] = {event};
+      timeline[slotIndex].columns[column] = {rowGroup, event};
     }
   }
 
-  return timeline;
+  return {timeline, start, end};
 }
+
+module.exports = {computeLayout};
