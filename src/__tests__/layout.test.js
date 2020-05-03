@@ -67,12 +67,13 @@ describe('computeLayout', () => {
       {start: time('10:00'), end: time('10:30')},
       {start: time('10:30'), end: time('11:30')},
       {start: time('11:00'), end: time('12:00')},
+      {start: time('12:00'), end: time('12:30')},
     ];
     const rowGroup1 = {width: 1};
     const rowGroup2 = {width: 2};
     const layout = computeLayout(events);
     expect(layout.start).toBe(time('10:00').getTime());
-    expect(layout.end).toBe(time('12:00').getTime());
+    expect(layout.end).toBe(time('12:30').getTime());
 
     expect(layout.timeline).toStrictEqual([
       {
@@ -112,6 +113,14 @@ describe('computeLayout', () => {
       {
         time: time('11:45').getTime(),
         columns: [undefined, {rowGroup: rowGroup2, event: events[2]}],
+      },
+      {
+        time: time('12:00').getTime(),
+        columns: [{rowGroup: rowGroup1, event: events[3]}],
+      },
+      {
+        time: time('12:15').getTime(),
+        columns: [{rowGroup: rowGroup1, event: events[3]}],
       },
     ]);
   });
