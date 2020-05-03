@@ -39,7 +39,7 @@ function useState(initialValue) {
     console.log('new hook!');
     const hookInfo = {
       type: 'state',
-      value: initialValue,
+      value: typeof initialValue == 'function' ? initialValue() : initialValue,
       setter: function setter(newValue) {
         hookInfo.value = newValue;
         topLevelUpdate();
