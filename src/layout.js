@@ -69,4 +69,4 @@ function computeLayout(events) {
   return {timeline, start, end};
 }
 
-module.exports = {computeLayout};
+module.exports = {computeLayout, roundDown, roundUp};
