@@ -18,15 +18,19 @@ function pad(num) {
   return num < 10 ? '0' + num.toString() : num.toString();
 }
 
+function dumpEvent(ev) {
+  console.log(
+    `${ev.start.getFullYear()}-${pad(ev.start.getMonth() + 1)}-${pad(
+      ev.start.getDate(),
+    )} ${pad(ev.start.getHours())}:${pad(ev.start.getMinutes())} -> ${pad(
+      ev.end.getHours(),
+    )}:${pad(ev.end.getMinutes())} ${ev.summary}`,
+  );
+}
+
 function dumpEvents(events) {
   for (const ev of events) {
-    console.log(
-      `${ev.start.getFullYear()}-${pad(ev.start.getMonth() + 1)}-${pad(
-        ev.start.getDate(),
-      )} ${pad(ev.start.getHours())}:${pad(ev.start.getMinutes())} ${
-        ev.summary
-      }`,
-    );
+    dumpEvent(ev);
   }
 }
 
@@ -35,11 +39,15 @@ async function fetchCurrentEvents() {
 
   const icalData = await fetchIcalData(process.argv[2]);
   return Object.values(ical.parseICS(icalData)).filter(
-    e => e.type === 'VEVENT' && e.start.getTime() >= todayInMs,
+    e =>
+      e.type === 'VEVENT' &&
+      e.summary != 'Free' &&
+      e.start.getTime() >= todayInMs,
   );
 }
 
 module.exports = {
+  dumpEvent,
   dumpEvents,
   fetchCurrentEvents,
 };
