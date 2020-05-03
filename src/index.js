@@ -1,5 +1,5 @@
-const {fetchCurrentEvents} = require('./calendar-data');
-const {computeLayout, roundDown} = require('./layout');
+const {fetchEvents, dumpEvent, dumpEvents} = require('./calendar-data');
+const {QUARTER_HOUR, computeLayout, roundDown, roundUp} = require('./layout');
 const {uiEventLoop, useEffect, useState} = require('./ui');
 const {paint} = require('./console');
 
@@ -12,10 +12,13 @@ function renderCalendar({url}) {
     let handle;
 
     function updateData() {
-      fetchCurrentEvents().then(events => {
-        setLayout(computeLayout(events));
+      const now = new Date();
+      fetchEvents(now).then(events => {
+        // dumpEvents(events);
+        const layout = computeLayout(events);
+        setLayout(layout);
       });
-      handle = setTimeout(updateData, 3000);
+      // handle = setTimeout(updateData, 3000);
     }
     updateData();
 
@@ -24,8 +27,38 @@ function renderCalendar({url}) {
 
   if (layout === null) return [];
 
-  // just for now
-  return [startTime, layout.start, layout.end];
+  const result = [];
+
+  // let rowIndex = (layout.start - startTime) / QUARTER_HOUR;
+  let firstTimelineIndex = (startTime - layout.start) / QUARTER_HOUR;
+  for (let rowIndex = 0; rowIndex < 16; rowIndex++) {
+    if (firstTimelineIndex + rowIndex < 0) {
+      continue;
+    }
+
+    const row = layout.timeline[firstTimelineIndex + rowIndex];
+
+    row.columns.forEach((event, columnIndex) => {
+      if (event.event.start.getTime() === row.time) {
+        result.push({
+          type: 'event',
+          event: event.event,
+          x: (columnIndex * 12) / event.rowGroup.width,
+          y: rowIndex,
+          width: 12 / event.rowGroup.width,
+          height:
+            (roundUp(event.event.end.getTime()) -
+              roundDown(event.event.start.getTime())) /
+            QUARTER_HOUR,
+          color: rowIndex === 0 ? 'red' : rowIndex < 2 ? 'orange' : 'cyan',
+        });
+      }
+    });
+
+    rowIndex++;
+  }
+
+  return result;
 }
 
 uiEventLoop(paint, renderCalendar, {url: process.argv[2]});

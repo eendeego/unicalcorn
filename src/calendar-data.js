@@ -34,8 +34,8 @@ function dumpEvents(events) {
   }
 }
 
-async function fetchCurrentEvents() {
-  const todayInMs = midnightTime(new Date());
+async function fetchEvents(startTime) {
+  const todayInMs = midnightTime(startTime);
 
   const icalData = await fetchIcalData(process.argv[2]);
   return Object.values(ical.parseICS(icalData)).filter(
@@ -49,5 +49,5 @@ async function fetchCurrentEvents() {
 module.exports = {
   dumpEvent,
   dumpEvents,
-  fetchCurrentEvents,
+  fetchEvents,
 };

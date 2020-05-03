@@ -29,6 +29,7 @@
     "prettier": "2.0.5"
   },
   "dependencies": {
+    "chalk": "^4.0.0",
     "deep-equal": "^2.0.3",
     "ical": "^0.8.0",
     "node-fetch": "^2.6.0",
