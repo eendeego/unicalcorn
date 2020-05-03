@@ -1,6 +1,7 @@
-const {fetchCurrentEvents, dumpEvents} = require('./calendar-data');
+const {fetchCurrentEvents} = require('./calendar-data');
 const {computeLayout, roundDown} = require('./layout');
 const {uiEventLoop, useEffect, useState} = require('./ui');
+const {paint} = require('./console');
 
 // eslint-disable-next-line
 function renderCalendar({url}) {
@@ -12,7 +13,6 @@ function renderCalendar({url}) {
 
     function updateData() {
       fetchCurrentEvents().then(events => {
-        // dumpEvents(events);
         setLayout(computeLayout(events));
       });
       console.log('Update');
@@ -29,4 +29,4 @@ function renderCalendar({url}) {
   return [startTime, layout.start, layout.end];
 }
 
-uiEventLoop(renderCalendar, {url: process.argv[2]});
+uiEventLoop(paint, renderCalendar, {url: process.argv[2]});

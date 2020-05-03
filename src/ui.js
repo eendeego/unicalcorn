@@ -9,10 +9,6 @@ const {shallowEqualArrays} = ShallowEquals;
 
 let sceneGraph = [];
 
-function paint(sceneGraph) {
-  console.log('New Scene Graph: ', sceneGraph);
-}
-
 let hookIndex = -1;
 let hookList = [];
 let topLevelUpdate;
@@ -52,7 +48,7 @@ function useState(initialValue) {
   return [hookList[hookIndex].value, hookList[hookIndex].setter];
 }
 
-function uiEventLoop(topComponent, props) {
+function uiEventLoop(paint, topComponent, props) {
   topLevelUpdate = function () {
     console.log('topLevelUpdate');
 
