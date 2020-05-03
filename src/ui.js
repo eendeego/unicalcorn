@@ -32,7 +32,6 @@ function useState(initialValue) {
   hookIndex++;
 
   if (hookIndex === hookList.length) {
-    console.log('new hook!');
     const hookInfo = {
       type: 'state',
       value: typeof initialValue == 'function' ? initialValue() : initialValue,
@@ -50,8 +49,6 @@ function useState(initialValue) {
 
 function uiEventLoop(paint, topComponent, props) {
   topLevelUpdate = function () {
-    console.log('topLevelUpdate');
-
     hookIndex = -1;
     const newSceneGraph = topComponent(props);
 

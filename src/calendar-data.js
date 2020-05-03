@@ -2,7 +2,6 @@ const ical = require('ical');
 const fetch = require('node-fetch');
 
 async function fetchIcalData(url) {
-  console.log('ical url: ' + url);
   return (await fetch(url)).text();
 }
 

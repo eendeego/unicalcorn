@@ -15,7 +15,6 @@ function renderCalendar({url}) {
       fetchCurrentEvents().then(events => {
         setLayout(computeLayout(events));
       });
-      console.log('Update');
       handle = setTimeout(updateData, 3000);
     }
     updateData();
