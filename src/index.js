@@ -1,5 +1,5 @@
-import {fetchCurrentEvents, dumpEvents} from './calendar-data.js';
-import uiEventLoop, {useEffect, useState} from './ui.js';
+const {fetchCurrentEvents, dumpEvents} = require('./calendar-data');
+const {uiEventLoop, useEffect, useState} = require('./ui');
 
 // eslint-disable-next-line
 function renderCalendar({url}) {

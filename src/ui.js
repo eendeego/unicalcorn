@@ -2,8 +2,8 @@
  * Render loop
  */
 
-import deepEqual from 'deep-equal';
-import ShallowEquals from 'shallow-equal/dist/index.cjs.js';
+const deepEqual = require('deep-equal');
+const ShallowEquals = require('shallow-equal');
 
 const {shallowEqualArrays} = ShallowEquals;
 
@@ -17,7 +17,7 @@ let hookIndex = -1;
 let hookList = [];
 let topLevelUpdate;
 
-export function useEffect(callback, dependencies) {
+function useEffect(callback, dependencies) {
   hookIndex++;
   if (hookIndex === hookList.length) {
     hookList.push({
@@ -32,7 +32,7 @@ export function useEffect(callback, dependencies) {
   }
 }
 
-export function useState(initialValue) {
+function useState(initialValue) {
   hookIndex++;
 
   if (hookIndex === hookList.length) {
@@ -52,7 +52,7 @@ export function useState(initialValue) {
   return [hookList[hookIndex].value, hookList[hookIndex].setter];
 }
 
-export default function uiEventLoop(topComponent, props) {
+function uiEventLoop(topComponent, props) {
   topLevelUpdate = function () {
     console.log('topLevelUpdate');
 
@@ -75,3 +75,9 @@ export default function uiEventLoop(topComponent, props) {
 
   topLevelUpdate();
 }
+
+module.exports = {
+  uiEventLoop,
+  useEffect,
+  useState,
+};

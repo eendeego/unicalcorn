@@ -1,5 +1,5 @@
-import ical from 'ical';
-import fetch from 'node-fetch';
+const ical = require('ical');
+const fetch = require('node-fetch');
 
 async function fetchIcalData(url) {
   console.log('ical url: ' + url);
@@ -19,7 +19,7 @@ function pad(num) {
   return num < 10 ? '0' + num.toString() : num.toString();
 }
 
-export function dumpEvents(events) {
+function dumpEvents(events) {
   for (const ev of events) {
     console.log(
       `${ev.start.getFullYear()}-${pad(ev.start.getMonth() + 1)}-${pad(
@@ -31,7 +31,7 @@ export function dumpEvents(events) {
   }
 }
 
-export async function fetchCurrentEvents() {
+async function fetchCurrentEvents() {
   const todayInMs = midnightTime(new Date());
 
   const icalData = await fetchIcalData(process.argv[2]);
@@ -39,3 +39,8 @@ export async function fetchCurrentEvents() {
     e => e.type === 'VEVENT' && e.start.getTime() >= todayInMs,
   );
 }
+
+module.exports = {
+  dumpEvents,
+  fetchCurrentEvents,
+};
