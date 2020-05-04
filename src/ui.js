@@ -7,7 +7,7 @@ const ShallowEquals = require('shallow-equal');
 
 const {shallowEqualArrays} = ShallowEquals;
 
-let sceneGraph = [];
+let sceneGraph = null;
 
 let hookIndex = -1;
 let hookList = [];

@@ -1,19 +1,24 @@
 const {fetchEvents, dumpEvent, dumpEvents} = require('./calendar-data');
 const {QUARTER_HOUR, computeLayout, roundDown, roundUp} = require('./layout');
 const {uiEventLoop, useEffect, useState} = require('./ui');
-const {paint} = require('./console');
+// const {paint} = require('./console');
+const {paint} = require('./unicorn');
 
 const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
 
 // eslint-disable-next-line
 function renderCalendar({url}) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
+  // const [startTime, setStartTime] = useState(() =>
+  //   roundDown(new Date('2020-05-04T09:00:00-0700')),
+  // );
   const [layout, setLayout] = useState(null);
 
   useEffect(() => {
     let handle;
 
     function updateData() {
+      // const now = new Date('2020-05-04T09:00:00-0700').getTime();
       const now = new Date();
       fetchEvents(now, now + THREE_DAYS).then(events => {
         // dumpEvents(events);

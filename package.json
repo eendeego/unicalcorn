@@ -34,6 +34,7 @@
     "ical": "^0.8.0",
     "node-fetch": "^2.6.0",
     "rrule": "^2.6.4",
-    "shallow-equal": "^1.2.1"
+    "shallow-equal": "^1.2.1",
+    "unicornhat-hd": "^0.0.4"
   }
 }

@@ -69,7 +69,7 @@ function projectRecurringEvents(rawEvents, startTime, stopTime) {
 
     let time = rawEvent.start.getTime();
 
-    for (const recurrenceDate of Object.keys(rawEvent.recurrences ?? [])) {
+    for (const recurrenceDate of Object.keys(rawEvent.recurrences || [])) {
       const recurrence = rawEvent.recurrences[recurrenceDate];
       recurrences[recurrenceDate] = {
         start: recurrence.start,
