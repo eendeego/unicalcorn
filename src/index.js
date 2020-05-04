@@ -3,6 +3,8 @@ const {QUARTER_HOUR, computeLayout, roundDown, roundUp} = require('./layout');
 const {uiEventLoop, useEffect, useState} = require('./ui');
 const {paint} = require('./console');
 
+const THREE_DAYS = 3 * 24 * 60 * 60 * 1000;
+
 // eslint-disable-next-line
 function renderCalendar({url}) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
@@ -13,12 +15,12 @@ function renderCalendar({url}) {
 
     function updateData() {
       const now = new Date();
-      fetchEvents(now).then(events => {
+      fetchEvents(now, now + THREE_DAYS).then(events => {
         // dumpEvents(events);
         const layout = computeLayout(events);
         setLayout(layout);
       });
-      // handle = setTimeout(updateData, 3000);
+      handle = setTimeout(updateData, 3000);
     }
     updateData();
 
@@ -54,8 +56,6 @@ function renderCalendar({url}) {
         });
       }
     });
-
-    rowIndex++;
   }
 
   return result;
