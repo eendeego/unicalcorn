@@ -1,17 +1,8 @@
-const ical = require('ical');
+const IcalExpander = require('ical-expander');
 const fetch = require('node-fetch');
 
 async function fetchIcalData(url) {
   return (await fetch(url)).text();
-}
-
-function midnightTime(referenceDate) {
-  const date = new Date(referenceDate);
-  date.setHours(0);
-  date.setMinutes(0);
-  date.setSeconds(0);
-  date.setMilliseconds(0);
-  return date.getTime();
 }
 
 function pad(num) {
@@ -34,67 +25,30 @@ function dumpEvents(events) {
   }
 }
 
-function projectRecurringEvents(rawEvents, startTime, stopTime) {
-  let result = [];
-  for (const rawEvent of rawEvents) {
-    result.push({
-      start: rawEvent.start,
-      end: rawEvent.end,
-      summary: rawEvent.summary,
-      raw: rawEvent,
-    });
-
-    if (rawEvent.rrule === undefined) {
-      continue;
-    }
-
-    const duration = rawEvent.end.getTime() - rawEvent.start.getTime();
-
-    const recurrences = {};
-
-    const newStartTimes = rawEvent.rrule.between(
-      new Date(startTime),
-      new Date(stopTime),
-    );
-
-    newStartTimes.forEach(startTime => {
-      recurrences[new Date(newStartTimes).toISOString().substr(0, 10)] = {
-        start: new Date(startTime),
-        end: new Date(new Date(startTime).getTime() + duration),
-        summary: rawEvent.summary,
-        raw: null,
-        recurringEvent: rawEvent,
-      };
-    });
-
-    let time = rawEvent.start.getTime();
-
-    for (const recurrenceDate of Object.keys(rawEvent.recurrences || [])) {
-      const recurrence = rawEvent.recurrences[recurrenceDate];
-      recurrences[recurrenceDate] = {
-        start: recurrence.start,
-        end: recurrence.end,
-        summary: rawEvent.summary,
-        raw: recurrence,
-        recurringEvent: rawEvent,
-      };
-    }
-
-    result = result.concat(Object.values(recurrences));
-  }
-  result.sort((a, b) => a.start.getTime() - b.start.getTime());
-  return result;
-}
-
 async function fetchEvents(startTime, stopTime) {
-  const todayInMs = midnightTime(startTime);
+  const ics = await fetchIcalData(process.argv[2]);
+  const icalExpander = new IcalExpander({ics, maxIterations: 100});
+  const events = icalExpander.between(new Date(startTime), new Date(stopTime));
 
-  const icalData = await fetchIcalData(process.argv[2]);
-  const rawEvents = ical.parseICS(icalData);
-  const filteredEvents = Object.values(rawEvents).filter(
-    e => e.type === 'VEVENT' && e.summary != 'Free',
-  );
-  return projectRecurringEvents(filteredEvents, startTime, stopTime);
+  const mappedEvents = events.events.map(e => ({
+    start: e.startDate.toJSDate(),
+    end: e.endDate.toJSDate(),
+    summary: e.summary,
+    raw: e,
+  }));
+  const mappedOccurrences = events.occurrences.map(o => ({
+    start: o.startDate.toJSDate(),
+    end: o.endDate.toJSDate(),
+    summary: o.item.summary,
+    raw: o,
+  }));
+
+  const allEvents = []
+    .concat(mappedEvents, mappedOccurrences)
+    .filter(e => e.summary !== 'Free')
+    .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+  return allEvents;
 }
 
 module.exports = {
