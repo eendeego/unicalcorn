@@ -16,7 +16,7 @@ function rgb(color) {
     }
     case 'orange': {
       const base = Math.floor(128 + 127 * Math.random());
-      return [base, (base >> 2) + (base >> 1), 0];
+      return [base, base >> 2, 0];
     }
     case 'cyan': {
       const base = Math.floor(128 + 127 * Math.random());
