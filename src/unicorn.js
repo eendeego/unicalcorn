@@ -34,11 +34,14 @@ function paintEvent(event) {
 
   for (let j = 1; j < event.height; j++) {
     for (let i = 0; i < event.width; i++) {
-      unicornHatHD.setPixel(
-        15 - (event.x + i),
-        15 - (event.y + j),
-        ...rgb(event.color),
-      );
+      const x = event.x + i;
+      const y = event.y + j;
+
+      if (x < 0 || x > 15 || y < 0 || y > 15) {
+        continue;
+      }
+
+      unicornHatHD.setPixel(15 - x, 15 - y, ...rgb(event.color));
     }
   }
 }
