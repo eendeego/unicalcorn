@@ -7,6 +7,8 @@ const {paint} = require('./unicorn');
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
 
+const CALENDER_UPDATE_INTERVAL = 30000;
+
 // eslint-disable-next-line
 function renderCalendar({url}) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
@@ -21,7 +23,7 @@ function renderCalendar({url}) {
         const layout = computeLayout(events);
         setLayout(layout);
       });
-      handle = setTimeout(updateData, 3000);
+      handle = setTimeout(updateData, CALENDER_UPDATE_INTERVAL);
     }
     updateData();
 
