@@ -1,5 +1,11 @@
 const {fetchEvents, dumpEvent, dumpEvents} = require('./calendar-data');
-const {QUARTER_HOUR, computeLayout, roundDown, roundUp} = require('./layout');
+const {
+  QUARTER_HOUR,
+  computeLayout,
+  roundDown,
+  roundToQuarter,
+  roundUp,
+} = require('./layout');
 const {uiEventLoop, useEffect, useState} = require('./ui');
 // const {paint} = require('./console');
 const {paint} = require('./unicorn');
@@ -26,6 +32,20 @@ function renderCalendar({url}) {
       handle = setTimeout(updateData, CALENDER_UPDATE_INTERVAL);
     }
     updateData();
+
+    return () => clearTimeout(handle);
+  }, []);
+
+  useEffect(() => {
+    let handle;
+
+    function updateTime() {
+      const now = Date.now();
+      setStartTime(roundToQuarter(now));
+      const wait = roundToQuarter(now + QUARTER_HOUR) - now;
+      handle = setTimeout(updateTime, wait);
+    }
+    updateTime();
 
     return () => clearTimeout(handle);
   }, []);

@@ -4,6 +4,10 @@
 
 const QUARTER_HOUR = 15 * 60 * 1000;
 
+function roundToQuarter(time) {
+  return Math.round(time / QUARTER_HOUR) * QUARTER_HOUR;
+}
+
 function roundDown(time) {
   return Math.floor(time / QUARTER_HOUR) * QUARTER_HOUR;
 }
@@ -69,4 +73,10 @@ function computeLayout(events) {
   return {timeline, start, end};
 }
 
-module.exports = {QUARTER_HOUR, computeLayout, roundDown, roundUp};
+module.exports = {
+  QUARTER_HOUR,
+  computeLayout,
+  roundDown,
+  roundToQuarter,
+  roundUp,
+};
