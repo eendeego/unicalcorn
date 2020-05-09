@@ -29,13 +29,25 @@ function rgb(color) {
 }
 
 function paintEvent(event) {
-  for (let i = 0; i < event.width; i++) {
-    frameBuffer[16 * event.y + event.x + i] = [255, 255, 255];
+  if (event.y >= 0 && event.y <= 15) {
+    for (let i = 0; i < event.width; i++) {
+      frameBuffer[16 * event.y + event.x + i] = [255, 255, 255];
+    }
   }
 
   for (let j = 1; j < event.height; j++) {
+    const y = event.y + j;
+    if (y < 0 || y > 15) {
+      continue;
+    }
+
     for (let i = 0; i < event.width; i++) {
-      frameBuffer[16 * (event.y + j) + event.x + i] = rgb(event.color);
+      const x = event.x + i;
+      if (x < 0 || x > 15) {
+        continue;
+      }
+
+      frameBuffer[16 * y + x] = rgb(event.color);
     }
   }
 }

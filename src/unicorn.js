@@ -28,16 +28,21 @@ function rgb(color) {
 }
 
 function paintEvent(event) {
-  for (let i = 0; i < event.width; i++) {
-    unicornHatHD.setPixel(15 - (event.x + i), 15 - event.y, 255, 255, 255);
+  if (event.y >= 0 && event.y <= 15) {
+    for (let i = 0; i < event.width; i++) {
+      unicornHatHD.setPixel(15 - (event.x + i), 15 - event.y, 255, 255, 255);
+    }
   }
 
   for (let j = 1; j < event.height; j++) {
+    const y = event.y + j;
+    if (y < 0 || y > 15) {
+      continue;
+    }
+
     for (let i = 0; i < event.width; i++) {
       const x = event.x + i;
-      const y = event.y + j;
-
-      if (x < 0 || x > 15 || y < 0 || y > 15) {
+      if (x < 0 || x > 15) {
         continue;
       }
 
