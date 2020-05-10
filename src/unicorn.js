@@ -8,22 +8,18 @@ const unicornHatHD = new UnicornHatHD('/dev/spidev0.0');
 unicornHatHD.setBrightness(0.5);
 
 function rgb(color) {
+  const base = Math.floor(128 + 127 * Math.random());
   switch (color) {
-    case 'red': {
-      const base = Math.floor(128 + 127 * Math.random());
+    case 'red':
       return [base, 0, 0];
-    }
-    case 'orange': {
-      const base = Math.floor(128 + 127 * Math.random());
+    case 'orange':
       return [base, base >> 2, 0];
-    }
-    case 'cyan': {
-      const base = Math.floor(128 + 127 * Math.random());
+    case 'cyan':
       return [0, base, base];
-    }
-    default: {
+    case 'yellow':
+      return [base, base >> 1, 0];
+    default:
       return [2, 2, 2];
-    }
   }
 }
 

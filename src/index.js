@@ -74,7 +74,7 @@ function renderCalendar({url}) {
             (roundUp(event.event.end.getTime()) -
               roundDown(event.event.start.getTime())) /
             QUARTER_HOUR,
-          color: rowIndex === 0 ? 'red' : rowIndex < 2 ? 'orange' : 'cyan',
+          color: rowIndex === 0 ? 'red' : rowIndex < 2 ? 'orange' : 'yellow',
         });
       } else if (
         event.event.start.getTime() < startTime &&
