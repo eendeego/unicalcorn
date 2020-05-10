@@ -18,7 +18,7 @@ function orange(base) {
   return [base, base >> 2, 0];
 }
 
-function cyan(base) {
+function _cyan(base) {
   return [0, base, base];
 }
 
