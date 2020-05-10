@@ -2,21 +2,21 @@
  * Calendar layout
  */
 
-const QUARTER_HOUR = 15 * 60 * 1000;
+export const QUARTER_HOUR = 15 * 60 * 1000;
 
-function roundToQuarter(time) {
+export function roundToQuarter(time) {
   return Math.round(time / QUARTER_HOUR) * QUARTER_HOUR;
 }
 
-function roundDown(time) {
+export function roundDown(time) {
   return Math.floor(time / QUARTER_HOUR) * QUARTER_HOUR;
 }
 
-function roundUp(time) {
+export function roundUp(time) {
   return Math.ceil(time / QUARTER_HOUR) * QUARTER_HOUR;
 }
 
-function computeLayout(events) {
+export function computeLayout(events) {
   let startTime = events.reduce(
     (min, event) => Math.min(min, event.start.getTime()),
     Number.POSITIVE_INFINITY,
@@ -70,11 +70,3 @@ function computeLayout(events) {
 
   return {timeline, start, end};
 }
-
-module.exports = {
-  QUARTER_HOUR,
-  computeLayout,
-  roundDown,
-  roundToQuarter,
-  roundUp,
-};

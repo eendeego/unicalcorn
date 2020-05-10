@@ -2,7 +2,7 @@
  * Paint implementation running on Unicorn hat HD
  */
 
-const UnicornHatHD = require('unicornhat-hd');
+import UnicornHatHD from 'unicornhat-hd';
 
 const unicornHatHD = new UnicornHatHD('/dev/spidev0.0');
 unicornHatHD.setBrightness(0.5);
@@ -51,7 +51,7 @@ function paintEvent(event) {
   }
 }
 
-function paint(sceneGraph) {
+export function paint(sceneGraph) {
   unicornHatHD.setAll(0, 0, 0);
 
   for (const item of sceneGraph) {
@@ -62,5 +62,3 @@ function paint(sceneGraph) {
 
   unicornHatHD.show();
 }
-
-module.exports = {paint};

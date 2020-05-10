@@ -1,5 +1,5 @@
-const IcalExpander = require('ical-expander');
-const fetch = require('node-fetch');
+import IcalExpander from 'ical-expander';
+import fetch from 'node-fetch';
 
 async function fetchIcalData(url) {
   return (await fetch(url)).text();
@@ -9,7 +9,7 @@ function pad(num) {
   return num < 10 ? '0' + num.toString() : num.toString();
 }
 
-function dumpEvent(ev) {
+export function dumpEvent(ev) {
   console.log(
     `${ev.start.getFullYear()}-${pad(ev.start.getMonth() + 1)}-${pad(
       ev.start.getDate(),
@@ -19,13 +19,13 @@ function dumpEvent(ev) {
   );
 }
 
-function dumpEvents(events) {
+export function dumpEvents(events) {
   for (const ev of events) {
     dumpEvent(ev);
   }
 }
 
-async function fetchEvents(startTime, stopTime) {
+export async function fetchEvents(startTime, stopTime) {
   const ics = await fetchIcalData(process.argv[2]);
   const icalExpander = new IcalExpander({ics, maxIterations: 100});
   const events = icalExpander.between(new Date(startTime), new Date(stopTime));
@@ -50,9 +50,3 @@ async function fetchEvents(startTime, stopTime) {
 
   return allEvents;
 }
-
-module.exports = {
-  dumpEvent,
-  dumpEvents,
-  fetchEvents,
-};

@@ -1,14 +1,14 @@
-const {fetchEvents, dumpEvent, dumpEvents} = require('./calendar-data');
-const {
+import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
+import {
   QUARTER_HOUR,
   computeLayout,
   roundDown,
   roundToQuarter,
   roundUp,
-} = require('./layout');
-const {uiEventLoop, useEffect, useState} = require('./ui');
-// const {paint} = require('./console');
-const {paint} = require('./unicorn');
+} from './layout.js';
+import {uiEventLoop, useEffect, useState} from './ui.js';
+// import {paint} from './console.js';
+import {paint} from './unicorn.js';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;

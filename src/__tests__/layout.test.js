@@ -1,4 +1,4 @@
-const {computeLayout} = require('../layout');
+import {computeLayout} from '../layout';
 
 function time(humanReadableTime) {
   const result = new Date();

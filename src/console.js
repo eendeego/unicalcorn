@@ -2,7 +2,7 @@
  * Paint implementation running on console
  */
 
-const chalk = require('chalk');
+import chalk from 'chalk';
 
 const blankUI = Array.from({length: 16 * 16}, () => [0, 0, 0]);
 
