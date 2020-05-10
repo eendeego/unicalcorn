@@ -60,11 +60,11 @@ export function useState(initialValue) {
   return [hookList[hookIndex].value, hookList[hookIndex].setter];
 }
 
-export function uiEventLoop(paint, topComponent, props) {
+export function uiEventLoop(paint, rootComponent, props) {
   topLevelUpdate = function () {
     hookIndex = -1;
     effectQueue = [];
-    const newSceneGraph = topComponent(props);
+    const newSceneGraph = rootComponent(props);
 
     if (!deepEqual(sceneGraph, newSceneGraph)) {
       sceneGraph = newSceneGraph;

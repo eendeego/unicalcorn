@@ -8,9 +8,10 @@ import {
   roundToQuarter,
   roundUp,
 } from './layout.js';
+import EventRow from './components/event-row.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
-// import {paint} from './console.js';
-import {paint} from './unicorn.js';
+// import {paint as consolePaint} from './console.js';
+import {paint as unicornPaint} from './unicorn.js';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
@@ -94,55 +95,26 @@ function renderCalendar({url}) {
 
   const result = [];
 
+  let currentTimeSlot = (startTime - layout.start) / QUARTER_HOUR;
   let firstTimelineIndex =
     (startTime + timeOffset - layout.start) / QUARTER_HOUR;
   for (let rowIndex = 0; rowIndex < 16; rowIndex++) {
     const row = layout.timeline[firstTimelineIndex + rowIndex];
 
-    if (row === undefined) {
-      continue;
-    }
-
-    row.columns.forEach((event, columnIndex) => {
-      if (event.event.start.getTime() === row.time) {
-        result.push({
-          type: 'event',
-          event: event.event,
-          x: (columnIndex * 12) / event.rowGroup.width,
-          y: rowIndex,
-          width: 12 / event.rowGroup.width,
-          height:
-            (roundUp(event.event.end.getTime()) -
-              roundDown(event.event.start.getTime())) /
-            QUARTER_HOUR,
-          color: rowIndex === 0 ? 'red' : rowIndex < 2 ? 'orange' : 'yellow',
-        });
-      } else if (
-        event.event.start.getTime() < startTime &&
-        row.time + QUARTER_HOUR === roundUp(event.event.end.getTime())
-      ) {
-        result.push({
-          type: 'event',
-          event: event.event,
-          x: (columnIndex * 12) / event.rowGroup.width,
-          y:
-            rowIndex -
-            (roundUp(event.event.end.getTime()) -
-              roundDown(event.event.start.getTime())) /
-              QUARTER_HOUR +
-            1,
-          width: 12 / event.rowGroup.width,
-          height:
-            (roundUp(event.event.end.getTime()) -
-              roundDown(event.event.start.getTime())) /
-            QUARTER_HOUR,
-          color: 'red',
-        });
-      }
+    (row?.columns || []).forEach((layoutEvent, columnIndex) => {
+      result.push(
+        EventRow({
+          currentTimeSlot,
+          timeSlot: firstTimelineIndex + rowIndex,
+          rowIndex,
+          columnIndex,
+          layoutEvent,
+        }),
+      );
     });
   }
 
-  return result;
+  return result.flat();
 }
 
-uiEventLoop(paint, renderCalendar, {url: process.argv[2]});
+uiEventLoop(unicornPaint, renderCalendar, {url: process.argv[2]});
