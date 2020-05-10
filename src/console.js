@@ -37,7 +37,11 @@ function paintEvent(event) {
       continue;
     }
 
-    for (let i = 0; i < event.width; i++) {
+    if (event.x >= 0 && event.x <= 15) {
+      frameBuffer[16 * y + event.x] = [255, 255, 255];
+    }
+
+    for (let i = 1; i < event.width; i++) {
       const x = event.x + i;
       if (x < 0 || x > 15) {
         continue;
