@@ -12,6 +12,7 @@ let sceneGraph = null;
 let hookIndex = -1;
 let hookList = [];
 let topLevelUpdate;
+let effectQueue = [];
 
 function useEffect(callback, dependencies) {
   hookIndex++;
@@ -19,12 +20,23 @@ function useEffect(callback, dependencies) {
     hookList.push({
       type: 'effect',
       callback,
-      dependencies,
-      newDependencies: null,
+      dependencies: null,
       cleanup: () => {},
     });
-  } else {
-    hookList[hookIndex].newDependencies = dependencies;
+  }
+
+  if (
+    hookList[hookIndex].dependencies == null ||
+    hookList[hookIndex].dependencies.some(
+      (dependency, i) => !Object.is(dependency, dependencies[i]),
+    )
+  ) {
+    if (!shallowEqualArrays(hookList[hookIndex].dependencies, dependencies)) {
+      effectQueue.push({
+        effect: hookList[hookIndex],
+      });
+    }
+    hookList[hookIndex].dependencies = dependencies;
   }
 }
 
@@ -50,6 +62,7 @@ function useState(initialValue) {
 function uiEventLoop(paint, topComponent, props) {
   topLevelUpdate = function () {
     hookIndex = -1;
+    effectQueue = [];
     const newSceneGraph = topComponent(props);
 
     if (!deepEqual(sceneGraph, newSceneGraph)) {
@@ -57,12 +70,12 @@ function uiEventLoop(paint, topComponent, props) {
       paint(sceneGraph);
     }
 
-    for (const hook of hookList) {
-      if (hook.type === 'effect') {
-        if (!shallowEqualArrays(hook.newDependencies, hook.dependencies)) {
-          hook.cleanup = hook.callback();
-        }
+    for (const queuedEffect of effectQueue) {
+      if (queuedEffect.effect.cleanup != null) {
+        queuedEffect.effect.cleanup();
       }
+      queuedEffect.effect.cleanup =
+        queuedEffect.effect.callback() ?? (() => {});
     }
   };
 
