@@ -55,9 +55,7 @@ function computeLayout(events) {
       };
     } else {
       rowGroup = timeline[firstSlotIndex].columns[0].rowGroup;
-      if (column === timeline[firstSlotIndex].columns.length) {
-        rowGroup.width++;
-      }
+      rowGroup.width = Math.max(rowGroup.width, column + 1);
     }
 
     maxColumns = Math.max(maxColumns, column + 1);

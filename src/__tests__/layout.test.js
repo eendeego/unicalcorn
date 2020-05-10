@@ -24,7 +24,7 @@ describe('computeLayout', () => {
     ]);
   });
 
-  it('supports overlapping events', () => {
+  it('supports overlapping events (1)', () => {
     const events = [
       {start: time('10:30'), end: time('11:30')},
       {start: time('11:00'), end: time('12:00')},
@@ -58,6 +58,35 @@ describe('computeLayout', () => {
       {
         time: time('11:45').getTime(),
         columns: [undefined, {rowGroup, event: events[1]}],
+      },
+    ]);
+  });
+
+  it('supports overlapping events (2)', () => {
+    const events = [
+      {start: time('10:00'), end: time('10:30')},
+      {start: time('10:00'), end: time('10:15')},
+      {start: time('10:15'), end: time('10:30')},
+    ];
+    const rowGroup = {width: 2};
+    const layout = computeLayout(events);
+    expect(layout.start).toBe(time('10:00').getTime());
+    expect(layout.end).toBe(time('10:30').getTime());
+
+    expect(layout.timeline).toStrictEqual([
+      {
+        time: time('10:00').getTime(),
+        columns: [
+          {rowGroup, event: events[0]},
+          {rowGroup, event: events[1]},
+        ],
+      },
+      {
+        time: time('10:15').getTime(),
+        columns: [
+          {rowGroup, event: events[0]},
+          {rowGroup, event: events[2]},
+        ],
       },
     ]);
   });
