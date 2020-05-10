@@ -34,6 +34,7 @@
     "deep-equal": "^2.0.3",
     "ical-expander": "^3.0.0",
     "node-fetch": "^2.6.0",
+    "powermate": "^0.0.1",
     "shallow-equal": "^1.2.1",
     "unicornhat-hd": "^0.0.4"
   }
