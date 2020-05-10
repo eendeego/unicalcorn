@@ -1,5 +1,10 @@
 import PixelRow from './pixel-row.js';
 
+const WAVE_BRIGHTNESS = 5 / 16;
+const WAVE_PERIOD = 4; // 1 cycle every 2s
+const WAVE_SPEED = 0.001 / WAVE_PERIOD;
+const WAVE_LENGTH = 1 / 32; // 8 pixels
+
 function gray(base) {
   return [base >> 2, base >> 2, base >> 2];
   // return [0, 0, base];
@@ -19,6 +24,14 @@ function cyan(base) {
 
 function yellow(base) {
   return [base, (base >> 1) + (base >> 2), 0];
+}
+
+function applyBrightness(rgb, brightness) {
+  return [
+    Math.floor(rgb[0]) * brightness,
+    Math.floor(rgb[1]) * brightness,
+    Math.floor(rgb[2]) * brightness,
+  ];
 }
 
 export default function EventRow({
@@ -45,10 +58,23 @@ export default function EventRow({
         : layoutEvent.firstSlotIndex === currentTimeSlot + 1
         ? orange
         : yellow;
+
+    const brightness =
+      1 -
+      WAVE_BRIGHTNESS +
+      WAVE_BRIGHTNESS *
+        Math.sin(
+          (timeSlot * WAVE_LENGTH - Date.now() * WAVE_SPEED) * 2 * Math.PI,
+        );
+
     pixelColors = Array.from({length: width}, (_, i) =>
       i === 0
         ? [255, 255, 255]
-        : colorFn(Math.floor(128 + 127 * Math.random())),
+        : applyBrightness(
+            // colorFn(Math.floor(128 + 127 * Math.random())),
+            colorFn(192),
+            brightness,
+          ),
     );
   }
 

@@ -22,7 +22,10 @@ const CALENDER_UPDATE_INTERVAL = 30000;
 function renderCalendar({url}) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
   const [timeOffset, setTimeOffset] = useState(0);
+
   const [layout, setLayout] = useState(null);
+
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     let handle;
@@ -87,6 +90,18 @@ function renderCalendar({url}) {
     }
 
     pollForPowerMate();
+
+    return () => clearTimeout(handle);
+  }, []);
+
+  useEffect(() => {
+    let handle;
+
+    function refresh() {
+      setRefresh(refresh => refresh + 1);
+      handle = setTimeout(refresh, 17);
+    }
+    refresh();
 
     return () => clearTimeout(handle);
   }, []);
