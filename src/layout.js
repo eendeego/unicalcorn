@@ -29,8 +29,25 @@ export function computeLayout(events) {
   const start = roundDown(startTime);
   const end = roundUp(endTime);
 
+  const quantizedEvents = events.map(event => ({
+    event,
+    firstSlotIndex: (roundDown(event.start.getTime()) - start) / QUARTER_HOUR,
+    lastSlotIndex: (roundUp(event.end.getTime()) - start) / QUARTER_HOUR - 1,
+  }));
+  quantizedEvents.sort((a, b) => {
+    if (a.firstSlotIndex !== b.firstSlotIndex) {
+      return a.firstSlotIndex - b.firstSlotIndex;
+    }
+
+    return (
+      b.lastSlotIndex - b.firstSlotIndex - (a.lastSlotIndex - a.firstSlotIndex)
+    );
+  });
+
   const timeline = Array.from(
-    {length: (end - start) / QUARTER_HOUR},
+    {
+      length: (end - start) / QUARTER_HOUR,
+    },
     (_, i) => ({
       time: start + i * QUARTER_HOUR,
       columns: [],
@@ -38,12 +55,7 @@ export function computeLayout(events) {
   );
 
   let maxColumns = 0;
-  for (const event of events) {
-    const firstSlotIndex =
-      (roundDown(event.start.getTime()) - start) / QUARTER_HOUR;
-    const lastSlotIndex =
-      (roundUp(event.end.getTime()) - start) / QUARTER_HOUR - 1;
-
+  for (const {event, firstSlotIndex, lastSlotIndex} of quantizedEvents) {
     let column = timeline[firstSlotIndex].columns.findIndex(
       column => column === undefined,
     );
