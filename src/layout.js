@@ -41,7 +41,9 @@ export function computeLayout(events) {
   for (const event of events) {
     const firstSlotIndex =
       (roundDown(event.start.getTime()) - start) / QUARTER_HOUR;
-    const lastSlotIndex = (roundUp(event.end.getTime()) - start) / QUARTER_HOUR;
+    const lastSlotIndex =
+      (roundUp(event.end.getTime()) - start) / QUARTER_HOUR - 1;
+
     let column = timeline[firstSlotIndex].columns.findIndex(
       column => column === undefined,
     );
@@ -61,10 +63,15 @@ export function computeLayout(events) {
     maxColumns = Math.max(maxColumns, column + 1);
     for (
       let slotIndex = firstSlotIndex;
-      slotIndex < lastSlotIndex;
+      slotIndex <= lastSlotIndex;
       slotIndex++
     ) {
-      timeline[slotIndex].columns[column] = {rowGroup, event};
+      timeline[slotIndex].columns[column] = {
+        rowGroup,
+        event,
+        firstSlotIndex,
+        lastSlotIndex,
+      };
     }
   }
 
