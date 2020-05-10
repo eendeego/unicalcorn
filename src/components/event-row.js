@@ -40,6 +40,7 @@ export default function EventRow({
   rowIndex, // 0-15
   columnIndex, // 1-#max overlapping meetings
   layoutEvent,
+  noise,
 }) {
   const x = (columnIndex * 12) / layoutEvent.rowGroup.width;
   const y = rowIndex;
@@ -70,11 +71,7 @@ export default function EventRow({
     pixelColors = Array.from({length: width}, (_, i) =>
       i === 0
         ? [255, 255, 255]
-        : applyBrightness(
-            // colorFn(Math.floor(128 + 127 * Math.random())),
-            colorFn(192),
-            brightness,
-          ),
+        : applyBrightness(colorFn(noise[x + i]), brightness),
     );
   }
 

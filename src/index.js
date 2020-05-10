@@ -18,6 +18,11 @@ const THREE_DAYS = 3 * ONE_DAY;
 
 const CALENDER_UPDATE_INTERVAL = 30000;
 
+function noiseRow() {
+  return Array.from({length: 16}, () => Math.floor(128 + 127 * Math.random()));
+}
+const noise = Array.from({length: 16}, () => noiseRow());
+
 // eslint-disable-next-line
 function renderCalendar({url}) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
@@ -124,6 +129,7 @@ function renderCalendar({url}) {
           rowIndex,
           columnIndex,
           layoutEvent,
+          noise: noise[(firstTimelineIndex + rowIndex) % 16],
         }),
       );
     });
