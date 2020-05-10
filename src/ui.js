@@ -48,7 +48,8 @@ function useState(initialValue) {
       type: 'state',
       value: typeof initialValue == 'function' ? initialValue() : initialValue,
       setter: function setter(newValue) {
-        hookInfo.value = newValue;
+        hookInfo.value =
+          typeof newValue === 'function' ? newValue(hookInfo.value) : newValue;
         topLevelUpdate();
       },
     };
