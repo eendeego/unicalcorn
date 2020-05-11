@@ -9,10 +9,12 @@ import {
   roundUp,
 } from './layout.js';
 import EventRow from './components/event-row.js';
+import HourMarker from './components/hour-marker.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
 import {paint as unicornPaint} from './unicorn.js';
 
+const TWO_HOURS = 2 * 60 * 60 * 1000;
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
 
@@ -132,6 +134,20 @@ function renderCalendar({url}) {
         }),
       );
     });
+  }
+
+  {
+    let rowIndex = 0;
+    let rowTime = layout.start + (firstTimelineIndex + rowIndex) * QUARTER_HOUR;
+    const delta = rowTime % TWO_HOURS;
+    rowIndex -= delta / QUARTER_HOUR;
+    rowTime -= delta;
+
+    while (rowIndex < 16) {
+      result.push(HourMarker({rowTime, rowIndex}));
+      rowIndex += 8;
+      rowTime += TWO_HOURS;
+    }
   }
 
   return result.flat();
