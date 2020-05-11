@@ -66,10 +66,10 @@ export function uiEventLoop(paint, rootComponent, props) {
     effectQueue = [];
     const newSceneGraph = rootComponent(props);
 
-    if (!deepEqual(sceneGraph, newSceneGraph)) {
-      sceneGraph = newSceneGraph;
-      paint(sceneGraph);
-    }
+    // if (!deepEqual(sceneGraph, newSceneGraph)) {
+    sceneGraph = newSceneGraph;
+    paint(sceneGraph);
+    // }
 
     for (const queuedEffect of effectQueue) {
       if (queuedEffect.effect.cleanup != null) {
