@@ -1,4 +1,5 @@
 import PowerMate from 'powermate';
+import fs from 'fs/promises';
 
 import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
 import {
@@ -153,4 +154,8 @@ function renderCalendar({url}) {
   return result.flat();
 }
 
-uiEventLoop(unicornPaint, renderCalendar, {url: process.argv[2]});
+fs.readFile(process.argv[2])
+  .then(config => JSON.parse(config))
+  .then(config =>
+    uiEventLoop(unicornPaint, renderCalendar, {url: config.data.calendar.url}),
+  );
