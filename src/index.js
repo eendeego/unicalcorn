@@ -39,7 +39,7 @@ function renderCalendar({url}) {
 
     function updateData() {
       const now = new Date(startTime).getTime();
-      fetchEvents(now - ONE_DAY, now + THREE_DAYS)
+      fetchEvents(url, now - ONE_DAY, now + THREE_DAYS)
         .then(events => setLayout(computeLayout(events)))
         .catch(error => console.log({error}));
       handle = setTimeout(updateData, CALENDER_UPDATE_INTERVAL);
@@ -47,7 +47,7 @@ function renderCalendar({url}) {
     updateData();
 
     return () => clearTimeout(handle);
-  }, []);
+  }, [url]);
 
   useEffect(() => {
     let handle;

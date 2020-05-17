@@ -25,8 +25,8 @@ export function dumpEvents(events) {
   }
 }
 
-export async function fetchEvents(startTime, stopTime) {
-  const ics = await fetchIcalData(process.argv[2]);
+export async function fetchEvents(url, startTime, stopTime) {
+  const ics = await fetchIcalData(url);
   const icalExpander = new IcalExpander({ics, maxIterations: 100});
   const events = icalExpander.between(new Date(startTime), new Date(stopTime));
 
