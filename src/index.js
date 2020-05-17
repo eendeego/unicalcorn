@@ -27,7 +27,7 @@ function noiseRow() {
 const noise = Array.from({length: 16}, () => noiseRow());
 
 // eslint-disable-next-line
-function renderCalendar({url}) {
+function renderCalendar(config) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
   const [timeOffset, setTimeOffset] = useState(0);
 
@@ -40,7 +40,7 @@ function renderCalendar({url}) {
 
     function updateData() {
       const now = new Date(startTime).getTime();
-      fetchEvents(url, now - ONE_DAY, now + THREE_DAYS)
+      fetchEvents(config.data.calendar.url, now - ONE_DAY, now + THREE_DAYS)
         .then(events => setLayout(computeLayout(events)))
         .catch(error => console.log({error}));
       handle = setTimeout(updateData, CALENDER_UPDATE_INTERVAL);
@@ -48,7 +48,7 @@ function renderCalendar({url}) {
     updateData();
 
     return () => clearTimeout(handle);
-  }, [url]);
+  }, [config]);
 
   useEffect(() => {
     let handle;
@@ -126,6 +126,7 @@ function renderCalendar({url}) {
     (row?.columns || []).forEach((layoutEvent, columnIndex) => {
       result.push(
         EventRow({
+          config,
           currentTimeSlot,
           timeSlot: firstTimelineIndex + rowIndex,
           rowIndex,
@@ -145,7 +146,7 @@ function renderCalendar({url}) {
     rowTime -= delta;
 
     while (rowIndex < 16) {
-      result.push(HourMarker({rowTime, rowIndex}));
+      result.push(HourMarker({config, rowTime, rowIndex}));
       rowIndex += 8;
       rowTime += TWO_HOURS;
     }
@@ -156,6 +157,4 @@ function renderCalendar({url}) {
 
 fs.readFile(process.argv[2])
   .then(config => JSON.parse(config))
-  .then(config =>
-    uiEventLoop(unicornPaint, renderCalendar, {url: config.data.calendar.url}),
-  );
+  .then(config => uiEventLoop(unicornPaint, renderCalendar, config));

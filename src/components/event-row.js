@@ -35,6 +35,7 @@ function applyBrightness(rgb, brightness) {
 }
 
 export default function EventRow({
+  config,
   currentTimeSlot,
   timeSlot, // time slot index
   rowIndex, // 0-15
@@ -42,7 +43,9 @@ export default function EventRow({
   layoutEvent,
   noise,
 }) {
-  const x = (columnIndex * 12) / layoutEvent.rowGroup.width;
+  const x =
+    (config.ui.hours === 'left' ? 4 : 0) +
+    (columnIndex * 12) / layoutEvent.rowGroup.width;
   const y = rowIndex;
   const width = 12 / layoutEvent.rowGroup.width;
 

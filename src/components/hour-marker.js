@@ -9,10 +9,11 @@ const hexNumbers = [
 ];
 
 export default function HourMarker({
+  config,
   rowTime, // Not used yet
   rowIndex, // 0-15
 }) {
-  const x = 12;
+  const x = config.ui.hours === 'left' ? 0 : 12;
   let y = rowIndex;
   const color = [63, 63, 63];
 
@@ -34,7 +35,7 @@ export default function HourMarker({
 
     for (let i = 0; i < 4; i++) {
       if (hexNumbers[j][4 * digit + i] !== ' ') {
-        result.push({x: 12 + i, y, color});
+        result.push({x: x + i, y, color});
       }
     }
   }

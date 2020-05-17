@@ -3,5 +3,8 @@
     "calendar": {
       "url": "https://calendar.google.com/calendar/ical/"
     }
+  },
+  "ui": {
+    "hours": "left"
   }
 }
