@@ -84,12 +84,12 @@ function renderCalendar(config) {
         });
         powermate.on('press', () => setTimeOffset(0));
 
-        powermate.on('error', _error => {
+        powermate.on('error', error => {
           powermate
             .eventNames()
             .forEach(event => powermate.removeAllListeners(event));
           powermate = null;
-          pollForPowerMate();
+          handle = setTimeout(pollForPowerMate, 1000);
         });
       } catch (_e) {
         handle = setTimeout(pollForPowerMate, 1000);
