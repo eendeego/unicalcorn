@@ -1,4 +1,5 @@
 import PowerMate from 'powermate';
+import PowerMateBleDevice from 'powermateble';
 import fs from 'fs/promises';
 
 import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
@@ -99,6 +100,34 @@ function renderCalendar(config) {
     pollForPowerMate();
 
     return () => clearTimeout(handle);
+  }, []);
+
+  useEffect(() => {
+    let handle;
+    let powermate;
+
+    if (config?.devices?.['powermate-ble'] == null) {
+      console.log('no powermate ble config');
+      return;
+    }
+
+    powermate = new PowerMateBleDevice(config.devices['powermate-ble']);
+
+    // powermate.on('status', status => console.log('status', status));
+
+    powermate.on('left', () =>
+      setTimeOffset(timeOffset =>
+        Math.max(timeOffset - QUARTER_HOUR, -ONE_DAY),
+      ),
+    );
+    powermate.on('right', () => {
+      setTimeOffset(timeOffset =>
+        Math.min(timeOffset + QUARTER_HOUR, THREE_DAYS - 16 * QUARTER_HOUR),
+      );
+    });
+    powermate.on('press', () => setTimeOffset(0));
+
+    return () => powermate.destroy();
   }, []);
 
   useEffect(() => {

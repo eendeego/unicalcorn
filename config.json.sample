@@ -4,6 +4,9 @@
       "url": "https://calendar.google.com/calendar/ical/"
     }
   },
+  "devices": {
+    "powermate-ble": "<mac-address>"
+  },
   "ui": {
     "hours": "left"
   }

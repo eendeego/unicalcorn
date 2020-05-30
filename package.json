@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/luismreis/unicalcorn.git"
+    "url": "git+https://github.com/eendeego/unicalcorn.git"
   },
   "keywords": [
     "ical",
@@ -20,9 +20,9 @@
   "author": "luis.m.reis@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/luismreis/unicalcorn/issues"
+    "url": "https://github.com/eendeego/unicalcorn/issues"
   },
-  "homepage": "https://github.com/luismreis/unicalcorn#readme",
+  "homepage": "https://github.com/eendeego/unicalcorn#readme",
   "devDependencies": {
     "eslint": "^7.0.0",
     "eslint-plugin-jest": "^23.10.0",
@@ -35,6 +35,7 @@
     "ical-expander": "^3.0.0",
     "node-fetch": "^2.6.0",
     "powermate": "^0.0.1",
+    "powermateble": "eendeego/powermate-ble",
     "shallow-equal": "^1.2.1",
     "unicornhat-hd": "^0.0.4"
   }
