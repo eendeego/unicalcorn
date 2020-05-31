@@ -169,7 +169,10 @@ function renderCalendar(config) {
 
   {
     let rowIndex = 0;
-    let rowTime = layout.start + (firstTimelineIndex + rowIndex) * QUARTER_HOUR;
+    let rowTime =
+      layout.timeline.length > 0
+        ? layout.start + (firstTimelineIndex + rowIndex) * QUARTER_HOUR
+        : startTime + timeOffset + rowIndex * QUARTER_HOUR;
     const delta = rowTime % TWO_HOURS;
     rowIndex -= delta / QUARTER_HOUR;
     rowTime -= delta;
