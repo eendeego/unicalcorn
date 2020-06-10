@@ -1,6 +1,5 @@
 import PowerMate from 'powermate';
 import PowerMateBleDevice from 'powermateble';
-import fs from 'fs/promises';
 
 import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
 import {
@@ -15,6 +14,7 @@ import HourMarker from './components/hour-marker.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
 import {paint as unicornPaint} from './unicorn.js';
+import {readAndUpdateConfiguration} from './config.js';
 
 const TWO_HOURS = 2 * 60 * 60 * 1000;
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -186,6 +186,6 @@ function renderCalendar(config) {
   return result.flat();
 }
 
-fs.readFile(process.argv[2])
-  .then(config => JSON.parse(config))
-  .then(config => uiEventLoop(unicornPaint, renderCalendar, config));
+readAndUpdateConfiguration(process.argv[2]).then(config =>
+  uiEventLoop(unicornPaint, renderCalendar, config),
+);
