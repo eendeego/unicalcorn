@@ -5,33 +5,25 @@ const WAVE_PERIOD = 4; // 1 cycle every 2s
 const WAVE_SPEED = 0.001 / WAVE_PERIOD;
 const WAVE_LENGTH = 1 / 32; // 8 pixels
 
-function gray(base) {
-  return [base >> 2, base >> 2, base >> 2];
-  // return [0, 0, base];
-}
-
-function red(base) {
-  return [base, 0, 0];
-}
-
-function orange(base) {
-  return [base, base >> 2, 0];
-}
-
-function _cyan(base) {
-  return [0, base, base];
-}
-
-function yellow(base) {
-  return [base, (base >> 1) + (base >> 2), 0];
-}
+const colorScheme = {
+  egde: [0xff, 0xff, 0xff, 0xff],
+  past: [0x3f, 0x3f, 0x3f, 0xff],
+  present: [0xff, 0x00, 0x00, 0xff],
+  impending: [0xff, 0x3f, 0x00, 0xff],
+  future: [0xff, 0xbf, 0x00, 0xff],
+};
 
 function applyBrightness(rgb, brightness) {
-  return [
-    Math.floor(rgb[0]) * brightness,
-    Math.floor(rgb[1]) * brightness,
-    Math.floor(rgb[2]) * brightness,
-  ];
+  return [rgb[0] * brightness, rgb[1] * brightness, rgb[2] * brightness];
+}
+
+function intCap(component) {
+  let intComponent = Math.round(component);
+  return intComponent < 0 ? 0 : intComponent > 255 ? 255 : intComponent;
+}
+
+function intCappedRGB(rgb) {
+  return [intCap(rgb[0]), intCap(rgb[1]), intCap(rgb[2])];
 }
 
 export default function EventRow({
@@ -52,16 +44,16 @@ export default function EventRow({
   let pixelColors;
 
   if (timeSlot === layoutEvent.firstSlotIndex) {
-    pixelColors = Array.from({length: width}, () => [255, 255, 255]);
+    pixelColors = Array.from({length: width}, () => colorScheme.egde);
   } else {
-    const colorFn =
+    const baseColor =
       layoutEvent.lastSlotIndex < currentTimeSlot
-        ? gray
+        ? colorScheme.past
         : layoutEvent.firstSlotIndex <= currentTimeSlot
-        ? red
+        ? colorScheme.present
         : layoutEvent.firstSlotIndex === currentTimeSlot + 1
-        ? orange
-        : yellow;
+        ? colorScheme.impending
+        : colorScheme.future;
 
     const brightness =
       1 -
@@ -73,8 +65,13 @@ export default function EventRow({
 
     pixelColors = Array.from({length: width}, (_, i) =>
       i === 0
-        ? [255, 255, 255]
-        : applyBrightness(colorFn(noise[x + i]), brightness),
+        ? colorScheme.egde
+        : intCappedRGB(
+            applyBrightness(
+              applyBrightness(baseColor, noise[x + i]),
+              brightness,
+            ),
+          ),
     );
   }
 

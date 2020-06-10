@@ -22,10 +22,9 @@ const THREE_DAYS = 3 * ONE_DAY;
 
 const CALENDER_UPDATE_INTERVAL = 30000;
 
-function noiseRow() {
-  return Array.from({length: 16}, () => Math.floor(128 + 127 * Math.random()));
-}
-const noise = Array.from({length: 16}, () => noiseRow());
+const noise = Array.from(new Array(16), () =>
+  Array.from(new Array(16), () => (128 + 127 * Math.random()) / 255),
+);
 
 // eslint-disable-next-line
 function renderCalendar(config) {
