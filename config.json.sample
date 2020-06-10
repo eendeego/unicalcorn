@@ -8,6 +8,16 @@
     "powermate-ble": "<mac-address>"
   },
   "ui": {
-    "hours": "left"
+    "hours": "left",
+    "events": {
+      "scheme": "time-based",
+      "time-based-color-scheme": {
+        "egde": "#ffffff",
+        "past": "#3f3f3f",
+        "present": "#ff0000",
+        "impending": "#ff3f00",
+        "future": "#ffbf00"
+      }
+    }
   }
 }
