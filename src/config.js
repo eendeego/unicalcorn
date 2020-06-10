@@ -24,6 +24,16 @@ const defaultConfiguration = {
         impending: '#ff3f00',
         future: '#ffbf00',
       },
+      'sequence-color-scheme': [
+        '#ff0000',
+        '#ff7f00',
+        '#7fff00',
+        '#00ff00',
+        '#00ff7f',
+        '#007fff',
+        '#0000ff',
+        '#ff007f',
+      ],
     },
   },
 };
@@ -50,8 +60,19 @@ export async function readAndUpdateConfiguration(filename) {
     fileNeedsUpdate = true;
   }
 
-  if (config.ui.events.scheme !== 'time-based') {
-    config.ui.events.scheme !== 'time-based';
+  if (config.version === 1) {
+    config.ui.events['sequence-color-scheme'] = [
+      ...defaultConfiguration.ui.events['sequence-color-scheme'],
+    ];
+    config.version = 2;
+    fileNeedsUpdate = true;
+  }
+
+  if (
+    config.ui.events.scheme !== 'time-based' &&
+    config.ui.events.scheme !== 'sequence'
+  ) {
+    config.ui.events.scheme = 'time-based';
     fileNeedsUpdate = true;
   }
 

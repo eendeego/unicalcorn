@@ -17,7 +17,17 @@
         "present": "#ff0000",
         "impending": "#ff3f00",
         "future": "#ffbf00"
-      }
+      },
+      "sequence-color-scheme": [
+        "#ff0000",
+        "#ff7f00",
+        "#7fff00",
+        "#00ff00",
+        "#00ff7f",
+        "#007fff",
+        "#0000ff",
+        "#ff007f"
+      ]
     }
   }
 }

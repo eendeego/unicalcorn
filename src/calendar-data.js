@@ -31,12 +31,16 @@ export async function fetchEvents(url, startTime, stopTime) {
   const events = icalExpander.between(new Date(startTime), new Date(stopTime));
 
   const mappedEvents = events.events.map(e => ({
+    id: 0,
+    dayIndex: 0,
     start: e.startDate.toJSDate(),
     end: e.endDate.toJSDate(),
     summary: e.summary,
     raw: e,
   }));
   const mappedOccurrences = events.occurrences.map(o => ({
+    id: 0,
+    dayIndex: 0,
     start: o.startDate.toJSDate(),
     end: o.endDate.toJSDate(),
     summary: o.item.summary,
@@ -47,6 +51,22 @@ export async function fetchEvents(url, startTime, stopTime) {
     .concat(mappedEvents, mappedOccurrences)
     .filter(e => e.summary !== 'Free')
     .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+  let currentDay = (allEvents?.[0]?.start ?? new Date())
+    .toISOString()
+    .substring(0, 10);
+  let dayIndex = 0;
+  allEvents.forEach((event, i) => {
+    event.id = i;
+    const day = event.start.toISOString().substring(0, 10);
+    if (day !== currentDay) {
+      currentDay = day;
+      dayIndex = 0;
+    } else {
+      dayIndex++;
+    }
+    event.dayIndex = dayIndex;
+  });
 
   return allEvents;
 }
