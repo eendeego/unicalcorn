@@ -9,6 +9,7 @@ import {
   roundToQuarter,
   roundUp,
 } from './layout.js';
+import ClockLine from './components/clock-line.js';
 import EventRow from './components/event-row.js';
 import HourMarker from './components/hour-marker.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
@@ -181,6 +182,18 @@ function renderCalendar(config) {
       rowIndex += 8;
       rowTime += TWO_HOURS;
     }
+  }
+
+  if (
+    currentTimeSlot >= firstTimelineIndex &&
+    currentTimeSlot < firstTimelineIndex + 16
+  ) {
+    result.push(
+      ClockLine({
+        config,
+        row: currentTimeSlot - firstTimelineIndex,
+      }),
+    );
   }
 
   return result.flat();
