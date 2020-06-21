@@ -15,7 +15,7 @@
         "size": 5,
         "hourDisplay": "current",
         "separator": true,
-        "centerVertically": true,
+        "centerVertically": false,
         "color": "#3f3f3f"
       },
       "line": {
