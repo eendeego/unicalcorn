@@ -83,7 +83,9 @@ function renderCalendar(config) {
             Math.min(timeOffset + QUARTER_HOUR, THREE_DAYS - 16 * QUARTER_HOUR),
           );
         });
-        powermate.on('press', () => setTimeOffset(0));
+        powermate.on('press', () =>
+          setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR),
+        );
 
         powermate.on('error', error => {
           powermate
@@ -100,7 +102,7 @@ function renderCalendar(config) {
     pollForPowerMate();
 
     return () => clearTimeout(handle);
-  }, []);
+  }, [config]);
 
   useEffect(() => {
     let handle;
@@ -125,10 +127,12 @@ function renderCalendar(config) {
         Math.min(timeOffset + QUARTER_HOUR, THREE_DAYS - 16 * QUARTER_HOUR),
       );
     });
-    powermate.on('press', () => setTimeOffset(0));
+    powermate.on('press', () =>
+      setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR),
+    );
 
     return () => powermate.destroy();
-  }, []);
+  }, [config]);
 
   useEffect(() => {
     let handle;

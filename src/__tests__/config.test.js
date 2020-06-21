@@ -57,6 +57,9 @@ describe('parseAndUpdateConfiguration', () => {
 
     expect(updatedConfig.version).toEqual(3);
     expect(updatedConfig.ui.clock).toEqual(defaultConfiguration.ui.clock);
+    expect(updatedConfig.ui.defaultOffset).toEqual(
+      defaultConfiguration.ui.defaultOffset,
+    );
     expect(fileNeedsUpdate).toBe(true);
   });
 

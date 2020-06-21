@@ -92,6 +92,7 @@ export async function parseAndUpdateConfiguration(originalConfig) {
 
   if (config.version === 2) {
     config.ui.clock = {...defaultConfiguration.ui.clock};
+    config.ui.defaultOffset = defaultConfiguration.ui.defaultOffset;
     config.version = 3;
     fileNeedsUpdate = true;
   }
