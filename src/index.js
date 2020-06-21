@@ -142,33 +142,37 @@ function renderCalendar(config) {
     return () => clearTimeout(handle);
   }, []);
 
-  if (layout === null) return [];
-
   const result = [];
+
+  let layoutStart = layout?.start ?? 0;
+  layoutStart = Number.isFinite(layoutStart) ? layoutStart : 0;
 
   // Offset in QUARTER_HOUR slots from the first event on the calendar and the
   // current time
-  let currentTimeSlot = (startTime - layout.start) / QUARTER_HOUR;
+  let currentTimeSlot = (startTime - layoutStart) / QUARTER_HOUR;
   // Offset in QUARTER_HOUR slots from the first event on the calendar and the
   // current time + time offset
   let firstTimelineIndex =
-    (startTime + timeOffset - layout.start) / QUARTER_HOUR;
-  for (let rowIndex = 0; rowIndex < 16; rowIndex++) {
-    const row = layout.timeline[firstTimelineIndex + rowIndex];
+    (startTime + timeOffset - layoutStart) / QUARTER_HOUR;
 
-    (row?.columns || []).forEach((layoutEvent, columnIndex) => {
-      result.push(
-        EventRow({
-          config,
-          currentTimeSlot,
-          timeSlot: firstTimelineIndex + rowIndex,
-          rowIndex,
-          columnIndex,
-          layoutEvent,
-          noise: noise[(firstTimelineIndex + rowIndex) % 16],
-        }),
-      );
-    });
+  if (layout != null) {
+    for (let rowIndex = 0; rowIndex < 16; rowIndex++) {
+      const row = layout.timeline[firstTimelineIndex + rowIndex];
+
+      (row?.columns || []).forEach((layoutEvent, columnIndex) => {
+        result.push(
+          EventRow({
+            config,
+            currentTimeSlot,
+            timeSlot: firstTimelineIndex + rowIndex,
+            rowIndex,
+            columnIndex,
+            layoutEvent,
+            noise: noise[(firstTimelineIndex + rowIndex) % 16],
+          }),
+        );
+      });
+    }
   }
 
   result.push(
