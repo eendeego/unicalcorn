@@ -40,6 +40,36 @@ export function useEffect(callback, dependencies) {
   }
 }
 
+export function useMemo(callback, dependencies) {
+  hookIndex++;
+  if (hookIndex === hookList.length) {
+    const value = callback();
+    hookList.push({
+      type: 'memo',
+      callback,
+      value,
+      dependencies,
+    });
+    return value;
+  }
+
+  if (
+    hookList[hookIndex].dependencies != null ||
+    hookList[hookIndex].dependencies.every((dependency, i) =>
+      Object.is(dependency, dependencies[i]),
+    )
+  ) {
+    return hookList[hookIndex].value;
+  }
+
+  hookList[hookIndex].dependencies = dependencies;
+  return (hookList[hookIndex].value = callback());
+}
+
+export function useCallback(callback, dependencies) {
+  return useMemo(() => callback, dependencies);
+}
+
 export function useState(initialValue) {
   hookIndex++;
 
@@ -47,10 +77,16 @@ export function useState(initialValue) {
     const hookInfo = {
       type: 'state',
       value: typeof initialValue == 'function' ? initialValue() : initialValue,
-      setter: function setter(newValue) {
-        hookInfo.value =
-          typeof newValue === 'function' ? newValue(hookInfo.value) : newValue;
-        topLevelUpdate();
+      setter: function setter(newValueOrCallback) {
+        const newValue =
+          typeof newValueOrCallback === 'function'
+            ? newValueOrCallback(hookInfo.value)
+            : newValueOrCallback;
+        const udpate = !Object.is(newValue, hookInfo.value);
+        hookInfo.value = newValue;
+        if (udpate) {
+          topLevelUpdate();
+        }
       },
     };
 

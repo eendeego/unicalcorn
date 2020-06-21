@@ -9,15 +9,13 @@ import {
   roundToQuarter,
   roundUp,
 } from './layout.js';
-import ClockLine from './components/clock-line.js';
 import EventRow from './components/event-row.js';
-import HourMarker from './components/hour-marker.js';
-import {uiEventLoop, useEffect, useState} from './ui.js';
+import Clock from './components/clock.js';
+import {uiEventLoop, useCallback, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
 import {paint as unicornPaint} from './unicorn.js';
 import {readAndUpdateConfiguration} from './config.js';
 
-const TWO_HOURS = 2 * 60 * 60 * 1000;
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
 
@@ -30,7 +28,9 @@ const noise = Array.from(new Array(16), () =>
 // eslint-disable-next-line
 function renderCalendar(config) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
-  const [timeOffset, setTimeOffset] = useState(0);
+  const [timeOffset, setTimeOffset] = useState(
+    config.ui.defaultOffset * QUARTER_HOUR,
+  );
 
   const [layout, setLayout] = useState(null);
 
@@ -146,7 +146,11 @@ function renderCalendar(config) {
 
   const result = [];
 
+  // Offset in QUARTER_HOUR slots from the first event on the calendar and the
+  // current time
   let currentTimeSlot = (startTime - layout.start) / QUARTER_HOUR;
+  // Offset in QUARTER_HOUR slots from the first event on the calendar and the
+  // current time + time offset
   let firstTimelineIndex =
     (startTime + timeOffset - layout.start) / QUARTER_HOUR;
   for (let rowIndex = 0; rowIndex < 16; rowIndex++) {
@@ -167,34 +171,9 @@ function renderCalendar(config) {
     });
   }
 
-  {
-    let rowIndex = 0;
-    let rowTime =
-      layout.timeline.length > 0
-        ? layout.start + (firstTimelineIndex + rowIndex) * QUARTER_HOUR
-        : startTime + timeOffset + rowIndex * QUARTER_HOUR;
-    const delta = rowTime % TWO_HOURS;
-    rowIndex -= delta / QUARTER_HOUR;
-    rowTime -= delta;
-
-    while (rowIndex < 16) {
-      result.push(HourMarker({config, rowTime, rowIndex}));
-      rowIndex += 8;
-      rowTime += TWO_HOURS;
-    }
-  }
-
-  if (
-    currentTimeSlot >= firstTimelineIndex &&
-    currentTimeSlot < firstTimelineIndex + 16
-  ) {
-    result.push(
-      ClockLine({
-        config,
-        row: currentTimeSlot - firstTimelineIndex,
-      }),
-    );
-  }
+  result.push(
+    Clock({config, currentTimeSlot, firstTimelineIndex, startTime, timeOffset}),
+  );
 
   return result.flat();
 }

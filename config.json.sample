@@ -8,6 +8,24 @@
     "powermate-ble": "<mac-address>"
   },
   "ui": {
+    "defaultOffset": 0,
+    "clock": {
+      "digits": {
+        "format": "hexa",
+        "size": 5,
+        "hourDisplay": "current",
+        "separator": true,
+        "centerVertically": true,
+        "color": "#3f3f3f"
+      },
+      "line": {
+        "enabled": true,
+        "colors": {
+          "face": "#0000ff40",
+          "events": "#ffffff40"
+        }
+      }
+    },
     "hours": "left",
     "events": {
       "scheme": "time-based",

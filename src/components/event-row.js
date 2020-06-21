@@ -1,4 +1,5 @@
 import PixelRow from './pixel-row.js';
+import parseColor from '../parse-color.js';
 
 const WAVE_BRIGHTNESS = 5 / 16;
 const WAVE_PERIOD = 4; // 1 cycle every 2s
@@ -28,10 +29,6 @@ let colorSequenceEventRowState = {
   colorScheme: null,
 };
 
-function colorSubComponent(rgb, offset) {
-  return parseInt(rgb.substring(offset, offset + 2), 16);
-}
-
 function getTimeBasedEventRowState(config) {
   if (config === timeBasedEventRowState.lastSeenConfig) {
     return timeBasedEventRowState;
@@ -46,11 +43,9 @@ function getTimeBasedEventRowState(config) {
   };
 
   for (const color of Object.keys(colorScheme)) {
-    const rgb = config.ui.events['time-based-color-scheme'][color];
-    colorScheme[color][0] = colorSubComponent(rgb, 1);
-    colorScheme[color][1] = colorSubComponent(rgb, 3);
-    colorScheme[color][2] = colorSubComponent(rgb, 5);
-    colorScheme[color][3] = rgb.length > 7 ? colorSubComponent(rgb, 7) : 0xff;
+    colorScheme[color] = parseColor(
+      config.ui.events['time-based-color-scheme'][color],
+    );
   }
 
   timeBasedEventRowState = {
@@ -123,12 +118,7 @@ function geColorSequenceEventRowState(config) {
   const colorScheme = [];
 
   for (const rgb of config.ui.events['sequence-color-scheme']) {
-    const color = [0, 0, 0, 0];
-    color[0] = colorSubComponent(rgb, 1);
-    color[1] = colorSubComponent(rgb, 3);
-    color[2] = colorSubComponent(rgb, 5);
-    color[3] = rgb.length > 7 ? colorSubComponent(rgb, 7) : 0xff;
-    colorScheme.push(color);
+    colorScheme.push(parseColor(rgb));
   }
 
   colorSequenceEventRowState = {
