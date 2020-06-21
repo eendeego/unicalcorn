@@ -56,8 +56,8 @@ function renderCalendar(config) {
 
     function updateTime() {
       const now = Date.now();
-      setStartTime(roundToQuarter(now));
-      const wait = roundToQuarter(now + QUARTER_HOUR) - now;
+      setStartTime(roundDown(now));
+      const wait = roundUp(now) - now;
       handle = setTimeout(updateTime, wait);
     }
     updateTime();
