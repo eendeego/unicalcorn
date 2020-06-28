@@ -1,6 +1,7 @@
 import PowerMate from 'powermate';
 import PowerMateBleDevice from 'powermateble';
 
+import {Worker} from 'worker_threads';
 import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
 import {
   QUARTER_HOUR,
@@ -19,14 +20,14 @@ import {readAndUpdateConfiguration} from './config.js';
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
 
-const CALENDER_UPDATE_INTERVAL = 30000;
+const CALENDAR_UPDATE_INTERVAL = 30000;
 
 const noise = Array.from(new Array(16), () =>
   Array.from(new Array(16), () => (128 + 127 * Math.random()) / 255),
 );
 
 // eslint-disable-next-line
-function renderCalendar(config) {
+function renderCalendar({config, worker}) {
   const [startTime, setStartTime] = useState(() => roundDown(Date.now()));
   const [timeOffset, setTimeOffset] = useState(
     config.ui.defaultOffset * QUARTER_HOUR,
@@ -41,14 +42,28 @@ function renderCalendar(config) {
 
     function updateData() {
       const now = new Date(startTime).getTime();
-      fetchEvents(config.data.calendar.url, now - ONE_DAY, now + THREE_DAYS)
-        .then(events => setLayout(computeLayout(events)))
-        .catch(error => console.log({error}));
-      handle = setTimeout(updateData, CALENDER_UPDATE_INTERVAL);
+      worker.postMessage({
+        type: 'update',
+        url: config.data.calendar.url,
+        start: now - ONE_DAY,
+        end: now + THREE_DAYS,
+      });
+      handle = setTimeout(updateData, CALENDAR_UPDATE_INTERVAL);
     }
     updateData();
 
-    return () => clearTimeout(handle);
+    function workerListener(message) {
+      if (message.type === 'update-layout') {
+        setLayout(message.layout);
+      }
+    }
+
+    worker.on('message', workerListener);
+
+    return () => {
+      clearTimeout(handle);
+      worker.removeListener('message', workerListener);
+    };
   }, [config]);
 
   useEffect(() => {
@@ -186,6 +201,12 @@ function renderCalendar(config) {
   return result.flat();
 }
 
+const worker = new Worker('./src/calendar-worker.js', {});
+worker.on('error', error => console.log(error));
+worker.on('exit', code => {
+  console.log(`Worker stopped with exit code ${code}`);
+});
+
 readAndUpdateConfiguration(process.argv[2]).then(config =>
-  uiEventLoop(unicornPaint, renderCalendar, config),
+  uiEventLoop(unicornPaint, renderCalendar, {config, worker}),
 );
