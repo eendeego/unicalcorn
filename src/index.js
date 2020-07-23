@@ -14,7 +14,7 @@ import EventRow from './components/event-row.js';
 import Clock from './components/clock.js';
 import {uiEventLoop, useCallback, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
-import {paint as unicornPaint} from './unicorn.js';
+import {paint as unicornPaint, clear} from './unicorn.js';
 import {readAndUpdateConfiguration} from './config.js';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
@@ -201,6 +201,8 @@ function renderCalendar({config, worker}) {
   return result.flat();
 }
 
+console.log('Starting Unicalcorn!');
+
 const worker = new Worker('./src/calendar-worker.js', {});
 worker.on('error', error => console.log(error));
 worker.on('exit', code => {
@@ -210,3 +212,14 @@ worker.on('exit', code => {
 readAndUpdateConfiguration(process.argv[2]).then(config =>
   uiEventLoop(unicornPaint, renderCalendar, {config, worker}),
 );
+
+function signalHandler(signal) {
+  console.log('Received ' + signal);
+  setImmediate(() => {
+    clear();
+    process.exit(0);
+  });
+}
+
+process.on('SIGINT', signalHandler);
+process.on('SIGTERM', signalHandler);

@@ -36,3 +36,8 @@ export function paint(sceneGraph) {
 
   unicornHatHD.show();
 }
+
+export function clear() {
+  unicornHatHD.clear();
+  unicornHatHD.show();
+}
