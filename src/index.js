@@ -16,6 +16,7 @@ import {uiEventLoop, useCallback, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
 import {paint as unicornPaint, clear} from './unicorn.js';
 import {readAndUpdateConfiguration} from './config.js';
+import logger from './logger.js';
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
@@ -42,6 +43,7 @@ function renderCalendar({config, worker}) {
 
     function updateData() {
       const now = new Date(startTime).getTime();
+      logger.info('Fetch data for ' + new Date(now).toLocaleString());
       worker.postMessage({
         type: 'update',
         url: config.data.calendar.url,
@@ -54,6 +56,7 @@ function renderCalendar({config, worker}) {
 
     function workerListener(message) {
       if (message.type === 'update-layout') {
+        logger.info(`Got data! (took ${message.duration.toLocaleString()}ms)`);
         setLayout(message.layout);
       }
     }
@@ -85,6 +88,7 @@ function renderCalendar({config, worker}) {
     let powermate;
 
     function pollForPowerMate() {
+      logger.trace('pollForPowerMate');
       try {
         powermate = new PowerMate();
 
@@ -201,20 +205,20 @@ function renderCalendar({config, worker}) {
   return result.flat();
 }
 
-console.log('Starting Unicalcorn!');
+logger.info('Starting Unicalcorn!');
 
 const worker = new Worker('./src/calendar-worker.js', {});
-worker.on('error', error => console.log(error));
-worker.on('exit', code => {
-  console.log(`Worker stopped with exit code ${code}`);
-});
+worker.on('error', error => logger.error(error, `Worker error`));
+worker.on('exit', code =>
+  logger.error(`Worker stopped with exit code ${code}`),
+);
 
 readAndUpdateConfiguration(process.argv[2]).then(config =>
   uiEventLoop(unicornPaint, renderCalendar, {config, worker}),
 );
 
 function signalHandler(signal) {
-  console.log('Received ' + signal);
+  logger.info('Received ' + signal);
   setImmediate(() => {
     clear();
     process.exit(0);
