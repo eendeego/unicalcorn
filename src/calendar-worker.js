@@ -11,6 +11,7 @@ async function fetch(url, start, end) {
     events = await fetchEvents(url, start, end);
   } catch (error) {
     logger.error(error, 'Error fetching events');
+    return;
   }
 
   try {
