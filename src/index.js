@@ -42,7 +42,7 @@ function renderCalendar({config, worker}) {
     let handle;
 
     function updateData() {
-      const now = new Date(startTime).getTime();
+      const now = roundDown(Date.now());
       logger.info('Fetch data for ' + new Date(now).toLocaleString());
       worker.postMessage({
         type: 'update',
