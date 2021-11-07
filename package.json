@@ -5,6 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
+    "pretty": "prettier --write \"./**/*.{js,jsx,json}\"",
     "eslint": "eslint src",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest"
   },
@@ -27,7 +28,7 @@
     "eslint": "^7.0.0",
     "eslint-plugin-jest": "^23.10.0",
     "jest": "^26.0.1",
-    "prettier": "2.0.5"
+    "prettier": "^2.4.1"
   },
   "dependencies": {
     "chalk": "^4.0.0",

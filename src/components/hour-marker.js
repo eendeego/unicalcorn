@@ -85,9 +85,9 @@ export default function HourMarker({
 
   const height = config.ui.clock.digits.size;
 
-  const digits = (config.ui.clock.digits.format === 'hexa'
-    ? hexDigits
-    : decimalDigits)[height];
+  const digits = (
+    config.ui.clock.digits.format === 'hexa' ? hexDigits : decimalDigits
+  )[height];
 
   const digit = new Date(rowTime).getHours() % 12;
   for (let j = 0; j < height; j++) {
