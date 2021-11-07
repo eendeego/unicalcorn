@@ -105,3 +105,6 @@ dist
 
 # Nohup logs
 nohup.out
+
+# package-lock.json can't be checked in because of github dependencies (noble)
+package-lock.json
