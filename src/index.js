@@ -1,5 +1,7 @@
+import HID from 'node-hid';
 import PowerMate from 'powermate';
 import PowerMateBleDevice from 'powermateble';
+import usbDetect from 'usb-detection';
 
 import {Worker} from 'worker_threads';
 import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
@@ -12,7 +14,7 @@ import {
 } from './layout.js';
 import EventRow from './components/event-row.js';
 import Clock from './components/clock.js';
-import {uiEventLoop, useCallback, useEffect, useState} from './ui.js';
+import {uiEventLoop, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
 import {paint as unicornPaint, clear} from './unicorn.js';
 import {readAndUpdateConfiguration} from './config.js';
@@ -22,6 +24,9 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 const THREE_DAYS = 3 * ONE_DAY;
 
 const CALENDAR_UPDATE_INTERVAL = 30000;
+
+const ADAFRUIT_VENDOR_ID = 0x239a;
+const ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID = 0x80fb;
 
 const noise = Array.from(new Array(16), () =>
   Array.from(new Array(16), () => (128 + 127 * Math.random()) / 255),
@@ -124,17 +129,91 @@ function renderCalendar({config, worker}) {
   }, [config]);
 
   useEffect(() => {
+    let trinkey;
+
+    function initializeTrinkey() {
+      try {
+        let trinkeyDevice = HID.devices().find(dev => {
+          return (
+            dev.vendorId === ADAFRUIT_VENDOR_ID &&
+            dev.productId === ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID
+          );
+        });
+
+        if (trinkeyDevice == null) {
+          handle = setTimeout(pollForPowerMate, 1000);
+          return;
+        }
+
+        trinkey = new HID.HID(trinkeyDevice.path);
+
+        trinkey.on('data', function (data) {
+          if (data[1] === 234) {
+            setTimeOffset(timeOffset =>
+              Math.max(timeOffset - QUARTER_HOUR, -ONE_DAY),
+            );
+          } else if (data[1] === 233) {
+            setTimeOffset(timeOffset =>
+              Math.min(
+                timeOffset + QUARTER_HOUR,
+                THREE_DAYS - 16 * QUARTER_HOUR,
+              ),
+            );
+          } else if (data[1] === 226) {
+            setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR);
+          }
+        });
+
+        trinkey.on('error', error => {
+          shutdownTrinkey();
+        });
+      } catch (e) {
+        logger.error(e);
+      }
+    }
+
+    function shutdownTrinkey() {
+      if (trinkey != null) {
+        trinkey
+          .eventNames()
+          .forEach(event => trinkey.removeAllListeners(event));
+      }
+      trinkey = null;
+    }
+
+    usbDetect.on(
+      `add:${ADAFRUIT_VENDOR_ID}:${ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID}`,
+      _device => initializeTrinkey(),
+    );
+
+    usbDetect.on(
+      `remove:${ADAFRUIT_VENDOR_ID}:${ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID}`,
+      _device => shutdownTrinkey(),
+    );
+
+    if (
+      usbDetect.find(ADAFRUIT_VENDOR_ID, ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID)
+    ) {
+      initializeTrinkey();
+    }
+
+    return () => shutdownTrinkey();
+  }, [config]);
+
+  useEffect(() => {
     let handle;
     let powermate;
 
     if (config?.devices?.['powermate-ble'] == null) {
-      console.log('no powermate ble config');
+      logger.trace('no powermate ble config');
       return;
     }
 
     powermate = new PowerMateBleDevice(config.devices['powermate-ble']);
 
-    // powermate.on('status', status => console.log('status', status));
+    powermate.on('status', status =>
+      logger.trace('status ' + JSON.stringify(status)),
+    );
 
     powermate.on('left', () =>
       setTimeOffset(timeOffset =>
@@ -207,6 +286,9 @@ function renderCalendar({config, worker}) {
 
 logger.info('Starting Unicalcorn!');
 
+usbDetect.startMonitoring();
+HID.setDriverType('libusb');
+
 const worker = new Worker('./src/calendar-worker.js', {});
 worker.on('error', error => logger.error(error, `Worker error`));
 worker.on('exit', code =>
@@ -219,7 +301,9 @@ readAndUpdateConfiguration(process.argv[2]).then(config =>
 
 function signalHandler(signal) {
   logger.info('Received ' + signal);
+
   setImmediate(() => {
+    usbDetect.stopMonitoring();
     clear();
     process.exit(0);
   });
