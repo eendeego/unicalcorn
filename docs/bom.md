@@ -21,7 +21,6 @@
 - Pimoroni Pibow Case (Nice because end result is a single box containing everything)
   - [Pimoroni](https://shop.pimoroni.com/products/pibow-for-raspberry-pi-3-b-plus?variant=2601126395914)
   - [Adafruit](https://www.adafruit.com/product/2081)
-  - [Adafruit](https://www.adafruit.com/product/2082) (Fancy!)
 
 ### State Of The Art / (untested) / Splurge
 
@@ -39,12 +38,13 @@ If you plan to use the RPi for any other stuff. However, the RPi 4 dissipates a 
 
 ### Control devices
 
-Personal note: I had a Powermate USB laying around, it's my prefered device to interact with the project. The Powermate Bluetooth works reliably (for me) but has some adjustment time.
+Personal note: I had a Powermate USB laying around, it's my preferred device to interact with the project. The Powermate Bluetooth works reliably (for me) but has some adjustment time.
 
-- Griffin Powermate Bluetooth (Not officially supported anymore, but available at a very cheap price)
+- Adafruit Rotary Trinkey - easy to acquire, currently supported, no dangling wires!
+  - [Adafruit](https://www.adafruit.com/product/4964)
+- Griffin Powermate Bluetooth - not officially supported anymore, but available at a very cheap price
   - [Amazon](https://smile.amazon.com/Griffin-PowerMate-Programmable-Multimedia-Controller/dp/B0859MKZ1B)
-- Griffin Powermate USB (not supported or available anymore)
-
+- Griffin Powermate USB - not supported or available anymore)
   - [Facebook Marketplace](https://www.facebook.com/marketplace/item/503937456977367)
 
 ### Optional

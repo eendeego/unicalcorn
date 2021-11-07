@@ -135,7 +135,9 @@ ssh pi@unicalcorn
 
 ### Configuring permissions / devices
 
-Disable powermanagement on Wi-Fi chip. (Default will aggressively disable network)
+#### Disable powermanagement on Wi-Fi chip
+
+(Default will aggressively disable network)
 
 ```sh
 sudo vi /etc/rc.local
@@ -163,7 +165,30 @@ Should show (among other things):
           Power Management:off
 ```
 
-Enable access to PowerMate USB for regular users
+#### Adafruit Rotary Trinkey
+
+Follow the instructions on the [Adafruit Site](https://learn.adafruit.com/adafruit-rotary-trinkey/arduino-ide-setup) to install and configure the [Arduino IDE](https://www.arduino.cc/en/software).
+
+Use this [Arduino Project](/docs/adafruit-rotary-trinkey.ino) to program the Trinkey to behave as a Volume Up/Down knob plus Mute button like most "Volumn Knobs" available online.
+
+To
+
+```sh
+sudo sh -c 'cat <<EOF >/etc/udev/rules.d/99-adafruit-rotary-trinkey.rules
+SUBSYSTEM=="input", GROUP="input", MODE="0666"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="239a", ATTRS{idProduct}=="80fb", MODE:="666", GROUP="plugdev"
+KERNEL=="hidraw*", ATTRS{idVendor}=="239a", ATTRS{idProduct}=="80fb", MODE="0666", GROUP="plugdev"
+EOF'
+
+sudo cp /lib/udev/rules.d/69-libmtp.rules /etc/udev/rules.d/69-libmtp.rules
+
+sudo sh -c 'cat <<EOF >>/etc/udev/rules.d/69-libmtp.rules
+
+ATTR{idVendor}=="239a", ATTR{idProduct}=="80fb", GOTO="libmtp_rules_end"
+EOF'
+```
+
+#### PowerMate USB
 
 ```sh
 sudo sh -c 'cat <<EOF >>/etc/udev/rules.d/99-powermate.rules
@@ -172,7 +197,7 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="077d", ATTRS{idProduct}=="0410", MODE:="666"
 EOF'
 ```
 
-Enabling access to Bluetooth (for PowerMate Bluetooth)
+#### PowerMate Bluetooth
 
 ```sh
 sudo setcap 'cap_net_raw,cap_net_admin+eip' `which hcitool`
