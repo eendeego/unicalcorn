@@ -34,7 +34,7 @@
     "chalk": "^4.0.0",
     "deep-equal": "^2.0.3",
     "ical-expander": "^3.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^3.0.0",
     "node-hid": "^2.1.1",
     "pino": "^7.1.0",
     "powermate": "^0.0.1",
