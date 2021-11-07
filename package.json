@@ -25,8 +25,8 @@
   },
   "homepage": "https://github.com/eendeego/unicalcorn#readme",
   "devDependencies": {
-    "eslint": "^7.0.0",
-    "eslint-plugin-jest": "^23.10.0",
+    "eslint": "^8.2.0",
+    "eslint-plugin-jest": "^25.2.3",
     "jest": "^26.0.1",
     "prettier": "^2.4.1"
   },
