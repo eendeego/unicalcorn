@@ -2,7 +2,6 @@
  * Render loop
  */
 
-import deepEqual from 'deep-equal';
 import ShallowEquals from 'shallow-equal';
 
 const {shallowEqualArrays} = ShallowEquals;

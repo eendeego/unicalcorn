@@ -4,14 +4,7 @@ import PowerMateBleDevice from 'powermateble';
 import usbDetect from 'usb-detection';
 
 import {Worker} from 'worker_threads';
-import {fetchEvents, dumpEvent, dumpEvents} from './calendar-data.js';
-import {
-  QUARTER_HOUR,
-  computeLayout,
-  roundDown,
-  roundToQuarter,
-  roundUp,
-} from './layout.js';
+import {QUARTER_HOUR, roundDown, roundUp} from './layout.js';
 import EventRow from './components/event-row.js';
 import Clock from './components/clock.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
@@ -41,7 +34,7 @@ function renderCalendar({config, worker}) {
 
   const [layout, setLayout] = useState(null);
 
-  const [refresh, setRefresh] = useState(0);
+  const [_refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     let handle;
@@ -111,7 +104,7 @@ function renderCalendar({config, worker}) {
           setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR),
         );
 
-        powermate.on('error', error => {
+        powermate.on('error', _error => {
           powermate
             .eventNames()
             .forEach(event => powermate.removeAllListeners(event));
@@ -133,15 +126,13 @@ function renderCalendar({config, worker}) {
 
     function initializeTrinkey() {
       try {
-        let trinkeyDevice = HID.devices().find(dev => {
-          return (
+        let trinkeyDevice = HID.devices().find(
+          dev =>
             dev.vendorId === ADAFRUIT_VENDOR_ID &&
-            dev.productId === ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID
-          );
-        });
+            dev.productId === ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID,
+        );
 
         if (trinkeyDevice == null) {
-          handle = setTimeout(pollForPowerMate, 1000);
           return;
         }
 
@@ -164,9 +155,7 @@ function renderCalendar({config, worker}) {
           }
         });
 
-        trinkey.on('error', error => {
-          shutdownTrinkey();
-        });
+        trinkey.on('error', _error => shutdownTrinkey());
       } catch (e) {
         logger.error(e);
       }
@@ -201,7 +190,6 @@ function renderCalendar({config, worker}) {
   }, [config]);
 
   useEffect(() => {
-    let handle;
     let powermate;
 
     if (config?.devices?.['powermate-ble'] == null) {
