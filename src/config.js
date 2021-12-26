@@ -8,7 +8,7 @@ import fs from 'fs/promises';
 // testing purposes
 
 export const defaultConfiguration = {
-  version: 3,
+  version: 4,
   data: {
     calendar: {
       url: 'https://calendar.google.com/calendar/ical/',
@@ -18,6 +18,7 @@ export const defaultConfiguration = {
     'powermate-ble': '<mac-address>',
   },
   ui: {
+    screenOrientation: 180,
     defaultOffset: 0,
     clock: {
       digits: {
@@ -94,6 +95,12 @@ export async function parseAndUpdateConfiguration(originalConfig) {
     config.ui.clock = {...defaultConfiguration.ui.clock};
     config.ui.defaultOffset = defaultConfiguration.ui.defaultOffset;
     config.version = 3;
+    fileNeedsUpdate = true;
+  }
+
+  if (config.version === 3) {
+    config.ui.screenOrientation = defaultConfiguration.ui.screenOrientation;
+    config.version = 4;
     fileNeedsUpdate = true;
   }
 

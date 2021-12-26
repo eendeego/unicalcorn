@@ -16,7 +16,7 @@ import EventRow from './components/event-row.js';
 import Clock from './components/clock.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
 // import {paint as consolePaint} from './console.js';
-import {paint as unicornPaint, clear} from './unicorn.js';
+import {paint as unicornPaint, clear, setOrientation} from './unicorn.js';
 import {readAndUpdateConfiguration} from './config.js';
 import logger from './logger.js';
 
@@ -231,6 +231,8 @@ function renderCalendar({config, worker}) {
 
     return () => powermate.destroy();
   }, [config]);
+
+  useEffect(() => void setOrientation(config.ui.screenOrientation), [config]);
 
   useEffect(() => {
     let handle;
