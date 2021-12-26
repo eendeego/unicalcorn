@@ -1,10 +1,8 @@
 import HID from 'node-hid';
-import PowerMate from 'powermate';
-import PowerMateBleDevice from 'powermateble';
 import usbDetect from 'usb-detection';
 
 import {Worker} from 'worker_threads';
-import {QUARTER_HOUR, roundDown, roundUp} from './layout.js';
+import {QUARTER_HOUR, roundDown} from './layout.js';
 import EventRow from './components/event-row.js';
 import Clock from './components/clock.js';
 import {uiEventLoop, useEffect, useState} from './ui.js';
@@ -12,14 +10,11 @@ import {uiEventLoop, useEffect, useState} from './ui.js';
 import {paint as unicornPaint, clear, setOrientation} from './unicorn.js';
 import {readAndUpdateConfiguration} from './config.js';
 import logger from './logger.js';
-
-const ONE_DAY = 24 * 60 * 60 * 1000;
-const THREE_DAYS = 3 * ONE_DAY;
-
-const CALENDAR_UPDATE_INTERVAL = 30000;
-
-const ADAFRUIT_VENDOR_ID = 0x239a;
-const ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID = 0x80fb;
+import useCalendarUpdater from './useCalendarUpdater.js';
+import useClock from './useClock.js';
+import usePowermate from './usePowermate.js';
+import useRotaryTrinkey from './useRotaryTrinkey.js';
+import usePowermateBLE from './usePowermateBLE.js';
 
 const noise = Array.from(new Array(16), () =>
   Array.from(new Array(16), () => (128 + 127 * Math.random()) / 255),
@@ -36,189 +31,13 @@ function renderCalendar({config, worker}) {
 
   const [_refresh, setRefresh] = useState(0);
 
-  useEffect(() => {
-    let handle;
+  useCalendarUpdater({config, worker, setLayout});
 
-    function updateData() {
-      const now = roundDown(Date.now());
-      logger.info('Fetch data for ' + new Date(now).toLocaleString());
-      worker.postMessage({
-        type: 'update',
-        url: config.data.calendar.url,
-        start: now - ONE_DAY,
-        end: now + THREE_DAYS,
-      });
-      handle = setTimeout(updateData, CALENDAR_UPDATE_INTERVAL);
-    }
-    updateData();
+  useClock({setStartTime});
 
-    function workerListener(message) {
-      if (message.type === 'update-layout') {
-        logger.info(`Got data! (took ${message.duration.toLocaleString()}ms)`);
-        setLayout(message.layout);
-      }
-    }
-
-    worker.on('message', workerListener);
-
-    return () => {
-      clearTimeout(handle);
-      worker.removeListener('message', workerListener);
-    };
-  }, [config]);
-
-  useEffect(() => {
-    let handle;
-
-    function updateTime() {
-      const now = Date.now();
-      setStartTime(roundDown(now));
-      const wait = roundUp(now) - now;
-      handle = setTimeout(updateTime, wait);
-    }
-    updateTime();
-
-    return () => clearTimeout(handle);
-  }, []);
-
-  useEffect(() => {
-    let handle;
-    let powermate;
-
-    function pollForPowerMate() {
-      logger.trace('pollForPowerMate');
-      try {
-        powermate = new PowerMate();
-
-        powermate.on('left', () =>
-          setTimeOffset(timeOffset =>
-            Math.max(timeOffset - QUARTER_HOUR, -ONE_DAY),
-          ),
-        );
-        powermate.on('right', () => {
-          setTimeOffset(timeOffset =>
-            Math.min(timeOffset + QUARTER_HOUR, THREE_DAYS - 16 * QUARTER_HOUR),
-          );
-        });
-        powermate.on('press', () =>
-          setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR),
-        );
-
-        powermate.on('error', _error => {
-          powermate
-            .eventNames()
-            .forEach(event => powermate.removeAllListeners(event));
-          powermate = null;
-          handle = setTimeout(pollForPowerMate, 1000);
-        });
-      } catch (_e) {
-        handle = setTimeout(pollForPowerMate, 1000);
-      }
-    }
-
-    pollForPowerMate();
-
-    return () => clearTimeout(handle);
-  }, [config]);
-
-  useEffect(() => {
-    let trinkey;
-
-    function initializeTrinkey() {
-      try {
-        let trinkeyDevice = HID.devices().find(
-          dev =>
-            dev.vendorId === ADAFRUIT_VENDOR_ID &&
-            dev.productId === ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID,
-        );
-
-        if (trinkeyDevice == null) {
-          return;
-        }
-
-        trinkey = new HID.HID(trinkeyDevice.path);
-
-        trinkey.on('data', function (data) {
-          if (data[1] === 234) {
-            setTimeOffset(timeOffset =>
-              Math.max(timeOffset - QUARTER_HOUR, -ONE_DAY),
-            );
-          } else if (data[1] === 233) {
-            setTimeOffset(timeOffset =>
-              Math.min(
-                timeOffset + QUARTER_HOUR,
-                THREE_DAYS - 16 * QUARTER_HOUR,
-              ),
-            );
-          } else if (data[1] === 226) {
-            setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR);
-          }
-        });
-
-        trinkey.on('error', _error => shutdownTrinkey());
-      } catch (e) {
-        logger.error(e);
-      }
-    }
-
-    function shutdownTrinkey() {
-      if (trinkey != null) {
-        trinkey
-          .eventNames()
-          .forEach(event => trinkey.removeAllListeners(event));
-      }
-      trinkey = null;
-    }
-
-    usbDetect.on(
-      `add:${ADAFRUIT_VENDOR_ID}:${ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID}`,
-      _device => initializeTrinkey(),
-    );
-
-    usbDetect.on(
-      `remove:${ADAFRUIT_VENDOR_ID}:${ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID}`,
-      _device => shutdownTrinkey(),
-    );
-
-    if (
-      usbDetect.find(ADAFRUIT_VENDOR_ID, ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID)
-    ) {
-      initializeTrinkey();
-    }
-
-    return () => shutdownTrinkey();
-  }, [config]);
-
-  useEffect(() => {
-    let powermate;
-
-    if (config?.devices?.['powermate-ble'] == null) {
-      logger.trace('no powermate ble config');
-      return;
-    }
-
-    powermate = new PowerMateBleDevice(config.devices['powermate-ble']);
-
-    powermate.on('status', status =>
-      logger.trace('status ' + JSON.stringify(status)),
-    );
-
-    powermate.on('left', () =>
-      setTimeOffset(timeOffset =>
-        Math.max(timeOffset - QUARTER_HOUR, -ONE_DAY),
-      ),
-    );
-    powermate.on('right', () => {
-      setTimeOffset(timeOffset =>
-        Math.min(timeOffset + QUARTER_HOUR, THREE_DAYS - 16 * QUARTER_HOUR),
-      );
-    });
-    powermate.on('press', () =>
-      setTimeOffset(config.ui.defaultOffset * QUARTER_HOUR),
-    );
-
-    return () => powermate.destroy();
-  }, [config]);
+  usePowermate({config, setTimeOffset});
+  useRotaryTrinkey({config, setTimeOffset});
+  usePowermateBLE({config, setTimeOffset});
 
   useEffect(() => void setOrientation(config.ui.screenOrientation), [config]);
 

@@ -2,6 +2,8 @@
  * Calendar layout
  */
 
+export const ONE_DAY = 24 * 60 * 60 * 1000;
+export const THREE_DAYS = 3 * ONE_DAY;
 export const QUARTER_HOUR = 15 * 60 * 1000;
 
 export function roundToQuarter(time) {
