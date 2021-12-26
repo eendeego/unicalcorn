@@ -27,16 +27,16 @@
   "devDependencies": {
     "eslint": "^8.5.0",
     "eslint-plugin-jest": "^25.3.0",
-    "jest": "^26.0.1",
-    "prettier": "^2.4.1"
+    "jest": "^27.4.5",
+    "prettier": "^2.5.1"
   },
   "dependencies": {
-    "chalk": "^4.0.0",
+    "chalk": "^5.0.0",
     "deep-equal": "^2.0.3",
     "ical-expander": "^3.0.0",
-    "node-fetch": "^3.0.0",
+    "node-fetch": "^3.1.0",
     "node-hid": "^2.1.1",
-    "pino": "^7.1.0",
+    "pino": "^7.6.1",
     "powermate": "^0.0.1",
     "powermateble": "eendeego/powermate-ble",
     "shallow-equal": "^1.2.1",
