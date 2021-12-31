@@ -93,6 +93,7 @@ function renderCalendar({config, worker}) {
   return result.flat();
 }
 
+// logger.level = 10 /* trace */; // Enable for debugging only
 logger.info('Starting Unicalcorn!');
 
 usbDetect.startMonitoring();

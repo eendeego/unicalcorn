@@ -6,17 +6,21 @@ import {useEffect} from './ui.js';
 
 export default function usePowermateBLE({config, setTimeOffset}) {
   useEffect(() => {
-    let powermate;
-
-    if (config?.devices?.['powermate-ble'] == null) {
+    let powermateMAC = config?.devices?.['powermate-ble'];
+    if (powermateMAC == null) {
       logger.trace('no powermate ble config');
       return;
     }
 
-    powermate = new PowerMateBleDevice(config.devices['powermate-ble']);
+    logger.trace('connecting to powermate-ble: ' + powermateMAC);
+    const powermate = new PowerMateBleDevice(powermateMAC);
 
     powermate.on('status', status =>
-      logger.trace('status ' + JSON.stringify(status)),
+      logger.trace('powermate-ble: status ' + status),
+    );
+
+    powermate.on('battery', status =>
+      logger.trace('powermate-ble: battery ' + status),
     );
 
     powermate.on('left', () =>
