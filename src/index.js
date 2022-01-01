@@ -109,15 +109,32 @@ readAndUpdateConfiguration(process.argv[2]).then(config =>
   uiEventLoop(unicornPaint, renderCalendar, {config, worker}),
 );
 
-function signalHandler(signal) {
+/**
+ * Leaving signal handlers on hold for the time being
+ */
+
+function _signalHandler(signal) {
   logger.info('Received ' + signal);
 
-  setImmediate(() => {
-    usbDetect.stopMonitoring();
-    clear();
-    process.exit(0);
-  });
+  // setImmediate(() => {
+  logger.info('Stop Monitoring');
+  // usbDetect.stopMonitoring();
+  logger.info('Clear');
+  clear();
+
+  // logger.info('Signal handler: Exit');
+  setTimeout(() => process.abort(), 3000);
+  process.exit(0);
+  // });
 }
 
-process.on('SIGINT', signalHandler);
-process.on('SIGTERM', signalHandler);
+// process.on('SIGQUIT', signalHandler);
+// process.on('SIGINT', signalHandler);
+// process.on('SIGTERM', signalHandler);
+
+function exitHandler() {
+  logger.info('Exit Handler: Process Exit');
+  clear();
+}
+
+process.on('exit', exitHandler);
