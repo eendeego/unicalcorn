@@ -26,7 +26,7 @@
   "homepage": "https://github.com/eendeego/unicalcorn#readme",
   "devDependencies": {
     "eslint": "^8.5.0",
-    "eslint-plugin-jest": "^25.3.0",
+    "eslint-plugin-jest": "^25.3.3",
     "jest": "^27.4.5",
     "prettier": "^2.5.1"
   },
@@ -36,7 +36,7 @@
     "ical-expander": "^3.0.0",
     "node-fetch": "^3.1.0",
     "node-hid": "^2.1.1",
-    "pino": "^7.6.1",
+    "pino": "^7.6.2",
     "powermate": "^0.0.1",
     "powermateble": "eendeego/powermate-ble",
     "shallow-equal": "^1.2.1",
