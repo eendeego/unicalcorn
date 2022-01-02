@@ -112,28 +112,23 @@ readAndUpdateConfiguration(process.argv[2]).then(config =>
  * Leaving signal handlers on hold for the time being
  */
 
-function _signalHandler(signal) {
+function signalHandler(signal) {
   logger.info('Received ' + signal);
-
-  // setImmediate(() => {
-  logger.info('Stop Monitoring');
-  // usbDetect.stopMonitoring();
-  logger.info('Clear');
+  worker.terminate();
   clear();
-
-  // logger.info('Signal handler: Exit');
   setTimeout(() => process.abort(), 3000);
   process.exit(0);
-  // });
 }
 
-// process.on('SIGQUIT', signalHandler);
-// process.on('SIGINT', signalHandler);
-// process.on('SIGTERM', signalHandler);
+process.on('SIGQUIT', signalHandler);
+process.on('SIGINT', signalHandler);
+process.on('SIGTERM', signalHandler);
 
 function exitHandler() {
   logger.info('Exit Handler: Process Exit');
+  worker.terminate();
   clear();
+  process.exit(0);
 }
 
 process.on('exit', exitHandler);
