@@ -37,7 +37,6 @@
     "node-fetch": "^3.1.0",
     "node-hid": "^2.1.1",
     "pino": "^7.6.2",
-    "powermate": "^0.0.1",
     "powermateble": "eendeego/powermate-ble",
     "shallow-equal": "^1.2.1",
     "unicornhat-hd": "^0.0.4",

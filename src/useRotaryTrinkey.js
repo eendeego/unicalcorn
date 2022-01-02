@@ -6,7 +6,7 @@ import logger from './logger.js';
 import {useEffect} from './ui.js';
 
 const ADAFRUIT_VENDOR_ID = 0x239a;
-const ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID = 0x80fb;
+const ROTARY_TRINKEY_PRODUCT_ID = 0x80fb;
 
 const VOLUME_DOWN = 234;
 const VOLUME_UP = 233;
@@ -25,7 +25,7 @@ export default function useRotaryTrinkey({config, setTimeOffset}) {
           trinkeyDevice = HID.devices().find(
             dev =>
               dev.vendorId === ADAFRUIT_VENDOR_ID &&
-              dev.productId === ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID,
+              dev.productId === ROTARY_TRINKEY_PRODUCT_ID,
           );
         }
 
@@ -71,7 +71,7 @@ export default function useRotaryTrinkey({config, setTimeOffset}) {
     }
 
     usbDetect.on(
-      `add:${ADAFRUIT_VENDOR_ID}:${ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID}`,
+      `add:${ADAFRUIT_VENDOR_ID}:${ROTARY_TRINKEY_PRODUCT_ID}`,
       device => {
         logger.trace('Trinkey added');
         initializeTrinkey(device);
@@ -79,7 +79,7 @@ export default function useRotaryTrinkey({config, setTimeOffset}) {
     );
 
     usbDetect.on(
-      `remove:${ADAFRUIT_VENDOR_ID}:${ADAFRUIT_ROTARY_TRINKEY_PRODUCT_ID}`,
+      `remove:${ADAFRUIT_VENDOR_ID}:${ROTARY_TRINKEY_PRODUCT_ID}`,
       device => {
         logger.trace('Trinkey removed');
         shutdownTrinkey(device);

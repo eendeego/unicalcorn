@@ -12,7 +12,7 @@ import {readAndUpdateConfiguration} from './config.js';
 import logger from './logger.js';
 import useCalendarUpdater from './useCalendarUpdater.js';
 import useClock from './useClock.js';
-import usePowermate from './usePowermate.js';
+import usePowermate from './powermate/usePowermate.js';
 import useRotaryTrinkey from './useRotaryTrinkey.js';
 import usePowermateBLE from './usePowermateBLE.js';
 
@@ -93,7 +93,6 @@ function renderCalendar({config, worker}) {
   return result.flat();
 }
 
-// logger.level = 10 /* trace */; // Enable for debugging only
 logger.info('Starting Unicalcorn!');
 
 usbDetect.startMonitoring();
