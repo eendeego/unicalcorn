@@ -31,15 +31,29 @@ function setPixel270(x, y, r, g, b) {
 }
 let setPixel = setPixel180;
 
+function getPixel000(x, y) {
+  return unicornHatHD.getPixel(x, y);
+}
+function getPixel090(x, y) {
+  return unicornHatHD.getPixel(15 - y, x);
+}
+function getPixel180(x, y) {
+  return unicornHatHD.getPixel(15 - x, 15 - y);
+}
+function getPixel270(x, y) {
+  return unicornHatHD.getPixel(y, 15 - x);
+}
+let getPixel = getPixel180;
+
 export function setOrientation(angle) {
-  setPixel =
+  [setPixel, getPixel] =
     angle === 0
-      ? setPixel000
+      ? [setPixel000, getPixel000]
       : angle === 90
-      ? setPixel090
+      ? [setPixel090, getPixel090]
       : angle === 180
-      ? setPixel180
-      : setPixel270;
+      ? [setPixel180, getPixel180]
+      : [setPixel270, getPixel270];
 }
 
 export function paint(sceneGraph) {
@@ -49,7 +63,7 @@ export function paint(sceneGraph) {
     if (color.length === 3 || color[3] === 255) {
       setPixel(x, y, color[0], color[1], color[2]);
     } else {
-      let rgb = unicornHatHD.getPixel(15 - x, 15 - y);
+      let rgb = getPixel(x, y);
       rgb = intCappedRGB([
         rgb[0] + (color[0] * color[3]) / 255,
         rgb[1] + (color[1] * color[3]) / 255,

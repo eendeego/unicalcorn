@@ -39,8 +39,6 @@ function renderCalendar({config, worker}) {
   useRotaryTrinkey({config, setTimeOffset});
   usePowermateBLE({config, setTimeOffset});
 
-  useEffect(() => void setOrientation(config.ui.screenOrientation), [config]);
-
   useEffect(() => {
     let handle;
 
@@ -104,9 +102,10 @@ worker.on('exit', code =>
   logger.error(`Worker stopped with exit code ${code}`),
 );
 
-readAndUpdateConfiguration(process.argv[2]).then(config =>
-  uiEventLoop(unicornPaint, renderCalendar, {config, worker}),
-);
+readAndUpdateConfiguration(process.argv[2]).then(config => {
+  setOrientation(config.ui.screenOrientation);
+  uiEventLoop(unicornPaint, renderCalendar, {config, worker});
+});
 
 /**
  * Leaving signal handlers on hold for the time being
