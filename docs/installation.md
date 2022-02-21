@@ -263,7 +263,7 @@ export NVM_DIR="$HOME/.nvm"
 Install Node 14+
 
 ```
-nvm ls-remote | tail -n 5
+nvm ls-remote | grep v14 | tail -n 5
 ```
 
 Choose the latest version of node (assuming 14.6.0) **(Don't copy the "v" letter in the version number!)**, then:
